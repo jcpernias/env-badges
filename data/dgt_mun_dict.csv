@@ -1,0 +1,58 @@
+column,label,var, type
+1,Código INE,ine_code, c
+2,Municipio,mun, c
+3,Provincia,prov, c
+4,Comunidad Autónoma,region, c
+5,Población Total,pop_total, i
+6,Población Hombres,pop_men, i
+7,Población Mujeres,pop_women, i
+8,Conductores Hombres,driv_men, i
+9,Conductoras Mujeres,driv_women,i
+10,Censo Conductores,driv_all,i
+11,Parque Ciclomotores,num_mopeds, i
+12,Parque Motocicletas,num_bikes, i
+13,Parque Turismos,num_cars, i
+14,Parque Furgonetas,num_vans, i
+15,Parque Camiones,num_trucks, i
+16,Parque Total,num_all, i
+17,Motocicletas sin ITV (<25 años),, i
+18,Turismos sin ITV (<25 años),, i
+19,Resto de Vehículos sin ITV (<25 años),, i
+20,Parque Ciclomotores (<25 años),, i
+21,Parque Ciclomotores (<15 años),, i
+22,Parque Ciclomotores (<8 años),, i
+23,Parque Ciclomotores (<4 años),, i
+24,Parque Motocicletas (<25 años),, i
+25,Parque Motocicletas (<15 años),, i
+26,Parque Motocicletas (<8 años),, i
+27,Parque Motocicletas (<4 años),, i
+28,Parque Turismos (<25 años),, i
+29,Parque Turismos (<15 años),, i
+30,Parque Turismos (<8 años),, i
+31,Parque Turismos (<4 años),, i
+32,Parque Furgonetas (<25 años),, i
+33,Parque Furgonetas (<15 años),, i
+34,Parque Furgonetas (<8 años),, i
+35,Parque Furgonetas (<4 años),, i
+36,Parque Camiones (<25 años),, i
+37,Parque Camiones (<15 años),, i
+38,Parque Camiones (<8 años),, i
+39,Parque Camiones (<4 años),, i
+40,Antigüedad Media del Parque (<25 años),age_all, d
+41,Antigüedad Media de Ciclomotores,age_mopeds, d
+42,Antigüedad Media de Motocicletas,age_bikes, d
+43,Antigüedad Media de Turismos,age_cars, d
+44,Antigüedad Media de Furgonetas,age_vans, d
+45,Antigüedad Media de Camiones,age_trucks, d
+46,Gasolina,petrol, i
+47,Diesel,diesel, i
+48,Electrificado,elec, i
+49,GLP (Gas Licuado del Petroleo),glp, i
+50,GNL (Gas Natural Licuado),gnl, i
+51,Otros Tipos Propulsión,other_prop, i
+52,Distintivo B,badge_b, i
+53,Distintivo C,badge_c, i
+54,Distintivo ECO,badge_eco, i
+55,Distintivo 0,badge_0, i
+56,Sin Distintivo,badge_none, i
+57,Total Campañas,, i
