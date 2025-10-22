@@ -41,7 +41,7 @@ convert_numbers <- function(x) {
 # como la cadena "".
 read_atlas_file <- function(csv_file) {
   read_delim(csv_file, delim = ";", col_types = "ccccic",
-             na = c("", ".")) |>
+             na = c("", ".", "..")) |>
     filter(is.na(Distritos), is.na(Secciones)) |>
     filter(!is.na(Total)) |>
     mutate(mun_code = str_sub(Municipios, end = 5),
