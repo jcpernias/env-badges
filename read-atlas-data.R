@@ -67,5 +67,6 @@ db <- map(csv_files, read_atlas_file) |>
   select(-var_label) |>
   pivot_wider(names_from = var, values_from = value)
 
+saveRDS(db, file = "data/ine_atlas_data.rds", compress = "xz")
 
 
