@@ -58,3 +58,10 @@ cis_db <- readRDS("data/cis_ideol_data.rds") |>
             by = join_by(year, last_vote == cis_label)) |>
   select(voting_year, label, pos)
 
+locations <- vote_distr |>
+  right_join(cis_db, by = join_by(year == voting_year, party == label)) |>
+  group_by(year, ine_code) |>
+  summarise(location = sum(pos * pct) / 100 - 5.5, .groups = "drop") |>
+  mutate(year = if_else(year == 2019, 2021, 2023))
+
+saveRDS(locations, file = "data/location_data.rds", compress = "xz")
