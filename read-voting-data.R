@@ -2,22 +2,59 @@ library(dplyr)
 library(tidyr)
 library(readr)
 library(readxl)
+library(purrr)
 
-voting_vars <- read_csv("data/voting_vars.csv",
-                        col_types = "ccc")
+# Lee los archivos con los resultados electorales
 raw_data_dir <- "data/orig"
-voting_file <- file.path(raw_data_dir, "02_201911_1.xlsx")
 
-voting_data <- read_xlsx(voting_file, skip = 6,
-                         col_names = voting_vars$var,
-                         col_types = voting_vars$type) |>
-  mutate(ine_code = formatC(prov_code * 1000 + mun_order,
-                            flag = "0", format = "d", width = 5))
+xlsx_files <- c("02_201911_1.xlsx",
+                "02_202307_1.xlsx")
+voting_files <- tibble(xlsx_file = file.path(raw_data_dir, xlsx_files),
+                       year = c(2019, 2023))
 
 
-voting_data |>
-  summarise(across(-c(1:12, ine_code),  ~ sum(., na.rm = TRUE))) |>
-  pivot_longer(everything(), names_to = "party", values_to = "votes") |>
-  arrange(-votes) |>
-  mutate(pct = votes / sum(votes) * 100, cum_pct = cumsum(pct)) |>
-  print(n = 100)
+read_voting_file <- function(xlsx_file, year) {
+  read_xlsx(xlsx_file, skip = 5) |>
+    mutate(ine_code =
+             formatC(`Código de Provincia` * 1000 + `Código de Municipio`,
+                     flag = "0", format = "d", width = 5),
+           year = year) |>
+    select(-c(1:10, 12, 13))
+}
+
+voting_data <- pmap(voting_files, read_voting_file)
+
+get_total_votes <- function(db) {
+  db |>
+    rename(total = `Votos a candidaturas`) |>
+    select(ine_code, year, total)
+}
+
+total_party_votes <- map(voting_data, get_total_votes) |>
+  bind_rows()
+
+
+get_vote_distr <- function(db) {
+  db |>
+    select(-1) |>
+    pivot_longer(cols = -c(ine_code, year),
+                 names_to = "party",
+                 values_to = "votes") |>
+    filter(votes != 0) |>
+    left_join(total_party_votes, by = join_by(ine_code, year)) |>
+    mutate(pct = votes / total * 100) |>
+    arrange(year, ine_code, -votes) |>
+    select(ine_code, year, party, votes, pct)
+}
+
+
+vote_distr <- map(voting_data, get_vote_distr) |>
+  bind_rows()
+
+
+# Lee los datos de ideología del CIS
+cis_db <- readRDS("data/cis_ideol_data.rds") |>
+  left_join(read_csv("data/party_labels.csv", col_types = "iicc"),
+            by = join_by(year, last_vote == cis_label)) |>
+  select(voting_year, label, pos)
+
