@@ -3,14 +3,15 @@ library(haven)
 library(purrr)
 
 raw_data_dir <- "data/orig"
-spss_files <- tibble(year = c(2021, 2023),
+spss_files <- tibble(year = c(2021, 2022, 2023),
                      file = file.path(raw_data_dir,
-                                      c("3344.sav", "3431.sav")))
+                                      c("3344.sav", "3388.sav", "3431.sav")))
 
 read_cis_file <- function(input_file, year) {
   skip_levels <- c(
     "Voto nulo",
     "Otros partidos",
+    "Otro partido",
     "En blanco",
     "No recuerda",
     "N.C.",

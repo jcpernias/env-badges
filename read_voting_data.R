@@ -56,12 +56,14 @@ vote_distr <- map(voting_data, get_vote_distr) |>
 cis_db <- readRDS("data/cis_ideol_data.rds") |>
   left_join(read_csv("data/party_labels.csv", col_types = "iicc"),
             by = join_by(year, last_vote == cis_label)) |>
-  select(voting_year, label, pos)
+  select(-last_vote) |>
+  rename(cis_year = year)
 
 locations <- vote_distr |>
-  right_join(cis_db, by = join_by(year == voting_year, party == label)) |>
-  group_by(year, ine_code) |>
+  right_join(cis_db, by = join_by(year == voting_year, party == label),
+             relationship = "many-to-many") |>
+  group_by(cis_year, ine_code) |>
   summarise(location = sum(pos * pct) / 100 - 5.5, .groups = "drop") |>
-  mutate(year = if_else(year == 2019, 2021, 2023))
+  rename(year = cis_year)
 
 saveRDS(locations, file = "data/location_data.rds", compress = "xz")
