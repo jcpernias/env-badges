@@ -1,0 +1,11 @@
+toc: true
+toc-depth: 2
+toc-location: right
+number-sections: true
+
+lang: es
+
+format:
+  html:
+    theme: flatly
+    embed-resources: true
