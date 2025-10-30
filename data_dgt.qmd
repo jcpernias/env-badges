@@ -1,35 +1,50 @@
 ---
-title: "Datos"
+title: "Datos DGT"
 editor: visual
 editor_options: 
   chunk_output_type: console
 ---
 
-## Librerías y funciones comunes
+## Preliminares
 
-Carga las librerías necesarias:
+### Librerías
+
+Manipulación de datos:
 
 ```{r}
 #| messages: false
 #| warning: false
 
-# Manipulación de datos
 library(dplyr)
+```
 
-# Programación funcional
-library(purrr)
+Manipulación de cadenas:
 
-# Manipulación de cadenas 
+```{r}
 library(stringr)
 library(glue)
+```
 
-# Lectura de hojas de cálculo y archivos SPSS
+Programación funcional (`map` y similares):
+
+```{r}
+library(purrr)
+```
+
+Lectura de hojas de cálculo:
+
+```{r}
 library(readr)
 library(readxl)
+```
 
-# Tablas
+Tablas:
+
+```{r}
 library(tinytable)
 ```
+
+### Variables globales y funciones comunes
 
 Define los directorios de datos:
 
@@ -53,9 +68,11 @@ save_data <- function(x, fname) {
 }
 ```
 
-## DGT
+## Lectura de los datos
 
 Desde 2021 la DGT proporciona ficheros Excel con información municipal, incluyendo el número de vehículos por distintivo ambiental.
+
+### Ficheros de Excel
 
 Tabla con los nombres de los ficheros:
 
@@ -68,6 +85,8 @@ dgt_files <- local({
 
 tt(dgt_files)
 ```
+
+### Diccionario de variables
 
 Diccionario de los ficheros de la DGT
 
@@ -87,6 +106,8 @@ dgt_dict <-
 tt(dgt_dict)
 ```
 
+### Lectura de datos
+
 Función que lee los datos de un año:
 
 ```{r}
@@ -105,7 +126,7 @@ read_dgt_file <- function(input_file, year, dict) {
 }
 ```
 
-Lee los datos de todos los años y los combina:
+Lee los datos de cada año y los combina en un único conjunto de datos:
 
 ```{r}
 db <- 
@@ -113,6 +134,8 @@ db <-
        \(file, year) read_dgt_file(file, year, dgt_dict)) |>
   bind_rows()
 ```
+
+### Escritura de datos
 
 Guarda los datos:
 
