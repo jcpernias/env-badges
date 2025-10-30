@@ -26,7 +26,6 @@ library(glue)
 # Lectura de hojas de cálculo y archivos SPSS
 library(readr)
 library(readxl)
-library(haven)
 
 # Tablas
 library(tinytable)
@@ -61,13 +60,12 @@ Desde 2021 la DGT proporciona ficheros Excel con información municipal, incluye
 Tabla con los nombres de los ficheros:
 
 ```{r}
-glue_str <- "DatosMunicipalesGeneral_{years}.xlsx"
-dgt_files <-
+dgt_files <- local({
+  glue_str <- "DatosMunicipalesGeneral_{years}.xlsx"
   tibble(file = file.path(raw_data_dir, glue(glue_str)),
          year = years)
-```
+})
 
-```{r}
 tt(dgt_files)
 ```
 
@@ -76,7 +74,7 @@ Diccionario de los ficheros de la DGT
 -   `column`: Número de columna de la hoja de cálculo.
 -   `label`: Nombre de la columna en la hoja de cálculo.
 -   `name`: Nombre de la variable.
--   `type`: Tipo de variable ("c" texto, "i" entero, "d" real).
+-   `type`: Tipo de variable ('c' para texto, 'i' para enteros y 'd' para reales).
 
 ```{r}
 dgt_dict <-
@@ -86,9 +84,6 @@ dgt_dict <-
            case_when(is.na(name) ~ "skip",
                      type == "c" ~ "text",
                      .default = "numeric"))
-```
-
-```{r}
 tt(dgt_dict)
 ```
 
