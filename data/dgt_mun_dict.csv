@@ -1,4 +1,4 @@
-column,label,var, type
+column,label,name, type
 1,Código INE,ine_code, c
 2,Municipio,mun, c
 3,Provincia,prov, c
@@ -6,15 +6,15 @@ column,label,var, type
 5,Población Total,pop_total, i
 6,Población Hombres,pop_men, i
 7,Población Mujeres,pop_women, i
-8,Conductores Hombres,driv_men, i
-9,Conductoras Mujeres,driv_women,i
-10,Censo Conductores,driv_all,i
-11,Parque Ciclomotores,num_mopeds, i
-12,Parque Motocicletas,num_bikes, i
-13,Parque Turismos,num_cars, i
-14,Parque Furgonetas,num_vans, i
-15,Parque Camiones,num_trucks, i
-16,Parque Total,num_all, i
+8,Conductores Hombres,lic_men, i
+9,Conductoras Mujeres,lic_women,i
+10,Censo Conductores,lic_all,i
+11,Parque Ciclomotores,, i
+12,Parque Motocicletas,, i
+13,Parque Turismos,, i
+14,Parque Furgonetas,, i
+15,Parque Camiones,, i
+16,Parque Total,fleet, i
 17,Motocicletas sin ITV (<25 años),, i
 18,Turismos sin ITV (<25 años),, i
 19,Resto de Vehículos sin ITV (<25 años),, i
@@ -38,18 +38,18 @@ column,label,var, type
 37,Parque Camiones (<15 años),, i
 38,Parque Camiones (<8 años),, i
 39,Parque Camiones (<4 años),, i
-40,Antigüedad Media del Parque (<25 años),age_all, d
-41,Antigüedad Media de Ciclomotores,age_mopeds, d
-42,Antigüedad Media de Motocicletas,age_bikes, d
-43,Antigüedad Media de Turismos,age_cars, d
-44,Antigüedad Media de Furgonetas,age_vans, d
-45,Antigüedad Media de Camiones,age_trucks, d
-46,Gasolina,petrol, i
-47,Diesel,diesel, i
-48,Electrificado,elec, i
-49,GLP (Gas Licuado del Petroleo),glp, i
-50,GNL (Gas Natural Licuado),gnl, i
-51,Otros Tipos Propulsión,other_prop, i
+40,Antigüedad Media del Parque (<25 años),fleet_age, d
+41,Antigüedad Media de Ciclomotores,, d
+42,Antigüedad Media de Motocicletas,, d
+43,Antigüedad Media de Turismos,, d
+44,Antigüedad Media de Furgonetas,, d
+45,Antigüedad Media de Camiones,, d
+46,Gasolina,, i
+47,Diesel,, i
+48,Electrificado,, i
+49,GLP (Gas Licuado del Petroleo),, i
+50,GNL (Gas Natural Licuado),, i
+51,Otros Tipos Propulsión,, i
 52,Distintivo B,badge_b, i
 53,Distintivo C,badge_c, i
 54,Distintivo ECO,badge_eco, i
