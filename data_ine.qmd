@@ -39,7 +39,6 @@ Lectura de hojas de cálculo:
 
 ```{r}
 library(readr)
-library(readxl)
 ```
 
 Tablas:
