@@ -53,6 +53,16 @@ data_dir <- "data"
 raw_data_dir <- file.path(data_dir, "orig")
 ```
 
+Funciones para construir la ruta a los ficheros de datos:
+
+```{r}
+data_file <- function(fname) 
+  file.path(data_dir, fname)
+
+raw_data_file <- function(fname) 
+  file.path(raw_data_dir, fname)
+```
+
 Aunque algunas fuentes ofrecen datos para más años, sólo se dispone de información completa para el periodo 2021--2023:
 
 ```{r}
@@ -62,10 +72,8 @@ years <- 2021:2023
 Función para guardar los datos una vez procesados:
 
 ```{r}
-save_data <- function(x, fname) {
-  saveRDS(x, file = file.path(data_dir, fname), 
-          compress = "xz")
-}
+save_data <- function(x, fname) 
+  saveRDS(x, file = data_file(fname), compress = "xz")
 ```
 
 ## Lectura de los datos
@@ -79,8 +87,7 @@ Tabla con los nombres de los ficheros:
 ```{r}
 dgt_files <- local({
   glue_str <- "DatosMunicipalesGeneral_{years}.xlsx"
-  tibble(file = file.path(raw_data_dir, glue(glue_str)),
-         year = years)
+  tibble(file = glue(glue_str), year = years)
 })
 ```
 
@@ -101,13 +108,20 @@ Diccionario de los ficheros de la DGT
 
 ```{r}
 dgt_dict <-
-  read_csv(file.path(data_dir, "dgt_mun_dict.csv"),
-           col_types = "icc") |>
+  read_csv(data_file("dgt_mun_dict.csv"), col_types = "icc") |>
   mutate(excel_col_types = 
            case_when(is.na(name) ~ "skip",
                      type == "c" ~ "text",
                      .default = "numeric"))
-tt(dgt_dict)
+```
+
+```{r}
+#| echo: false
+
+## TODO: the following condition should be ginven inside style_tt
+idx <- which(is.na(dgt_dict$name))
+tt(dgt_dict) |> 
+  style_tt(i = idx, color = "gray70")
 ```
 
 ### Lectura de datos
@@ -133,9 +147,11 @@ read_dgt_file <- function(input_file, year, dict) {
 Lee los datos de cada año y los combina en un único conjunto de datos:
 
 ```{r}
+
 db <- 
   pmap(dgt_files,
-       \(file, year) read_dgt_file(file, year, dgt_dict)) |>
+       \(file, year) 
+         read_dgt_file(raw_data_file(file), year, dgt_dict)) |>
   bind_rows()
 ```
 
