@@ -30,6 +30,8 @@ library(glue)
 Programación funcional (`map` y similares):
 
 ```{r}
+#| warning: false
+
 library(purrr)
 ```
 
