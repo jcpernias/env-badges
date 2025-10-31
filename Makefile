@@ -14,7 +14,17 @@ html_files := $(addprefix $(out_dir)/, $(addsuffix .html, $(src_files)))
 
 all: $(html_files)
 
+
+.PHONY: clean
+clean:
+	-rm -rf _output
+
+.PHONY: veryclean
+veryclean: clean
+	-rm data/*.rds
+
 $(out_dir)/%.html: %.qmd
 	quarto render $<
 
 $(out_dir)/data_dgt.html: $(dgt_data_files) data/dgt_mun_dict.csv
+
