@@ -1,6 +1,7 @@
 project:
   output-dir: _output
   render:
+    - data_ine.qmd
     - data_dgt.qmd
 
 toc: true
