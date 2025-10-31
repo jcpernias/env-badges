@@ -82,6 +82,10 @@ dgt_files <- local({
   tibble(file = file.path(raw_data_dir, glue(glue_str)),
          year = years)
 })
+```
+
+```{r}
+#| echo: false
 
 tt(dgt_files)
 ```
