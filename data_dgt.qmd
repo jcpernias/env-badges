@@ -42,6 +42,7 @@ Tablas:
 
 ```{r}
 library(tinytable)
+library(modelsummary)
 ```
 
 ### Variables globales y funciones comunes
@@ -164,14 +165,32 @@ db <-
 
 ### Escritura de datos
 
-Guarda los datos en formato rds:
+Guarda los datos en formato rds en el fichero `dgt_mun_data.rds`:
 
 ```{r}
 save_data(db, "dgt_mun_data.rds")
 ```
 
-Estructura del conjunto de datos:
+Variables de texto:
+
+-   `ine_code`: código del municipio, como lo define el INE.
+
+-   `mun`: nombre del municipio.
+
+-   `prov`: nombre de la provincia.
+
+-   `reg`: nombre de la comunidad autónoma.
+
+Estadísticos descriptivos de las variables numéricas:
 
 ```{r}
-str(db)
+#| echo: false
+
+datasummary_skim(db, 
+                 fun_numeric = 
+                   list(Mean = Mean, SD = SD, 
+                        Min = Min, Median = Median, Max = Max, 
+                        `Missing Pct.` = PercentMissing),
+                 type = "numeric") |> 
+  tt_style(j = 2:7, align = "r")
 ```
