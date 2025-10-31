@@ -97,7 +97,7 @@ Diccionario de los ficheros de la DGT
 -   `column`: Número de columna de la hoja de cálculo.
 -   `label`: Nombre de la columna en la hoja de cálculo.
 -   `name`: Nombre de la variable.
--   `type`: Tipo de variable ('c' para texto, 'i' para enteros y 'd' para reales).
+-   `type`: Tipo de variable (`"c"` para texto, `"i"` para enteros y `"d"` para reales).
 
 ```{r}
 dgt_dict <-
