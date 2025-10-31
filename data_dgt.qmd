@@ -130,23 +130,26 @@ tt(dgt_dict) |>
 
 ### Lectura de datos
 
-Función que lee los datos de un año:
+La función `read_dgt_file` lee los datos de un año:
 
 ```{r}
 # Lee datos de un año
 read_dgt_file <- function(input_file, year, dict) {
-  # El año 2021 hay una variable menos
-  if (year == 2021) {
+  if (year == 2021) { #<1>
     dict <- dict |> filter(column != 57)
   }
   
   read_xlsx(input_file, skip = 1,
             col_types = dict$excel_col_types,
             col_names = dict$name) |>
-    filter(!str_detect(mun, fixed("sin especificar"))) |>
-    mutate(year = year)
+    filter(!str_detect(mun, fixed("sin especificar"))) |> #<2>
+    mutate(year = year) #<3>
 }
 ```
+
+1.  En el año 2021 hay una variable menos.
+2.  Se ignoran las filas que recogen cifras no asociadas a un municipio en concreto.
+3.  Se añade la variable `year` para identificar a qué año corresponden los datos.
 
 Lee los datos de cada año y los combina en un único conjunto de datos:
 
@@ -161,13 +164,13 @@ db <-
 
 ### Escritura de datos
 
-Guarda los datos:
+Guarda los datos en formato rds:
 
 ```{r}
 save_data(db, "dgt_mun_data.rds")
 ```
 
-Estructura de los datos:
+Estructura del conjunto de datos:
 
 ```{r}
 str(db)
