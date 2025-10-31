@@ -99,21 +99,25 @@ tt(dgt_files)
 
 ### Diccionario de variables
 
-Diccionario de los ficheros de la DGT
+El archivo `"dgt_mun_dict.csv"` contiene información acerca de las variables contenidas en los ficheros de la DGT:
 
 -   `column`: Número de columna de la hoja de cálculo.
 -   `label`: Nombre de la columna en la hoja de cálculo.
 -   `name`: Nombre de la variable.
--   `type`: Tipo de variable (`"c"` para texto, `"i"` para enteros y `"d"` para reales).
+-   `type`: Tipo de variable (`c` para texto, `i` para enteros y `d` para reales).
+
+Se ignoran las columnas con valores ausentes en `name`.
 
 ```{r}
 dgt_dict <-
   read_csv(data_file("dgt_mun_dict.csv"), col_types = "icc") |>
-  mutate(excel_col_types = 
+  mutate(excel_col_types = #<1>
            case_when(is.na(name) ~ "skip",
                      type == "c" ~ "text",
                      .default = "numeric"))
 ```
+
+1.  Se añade `excel_col_types` a la tabla, que se usará más tarde como argumento de `read_xlsx` para especificar el tipo de columna de la hoja de cálculo.
 
 ```{r}
 #| echo: false
