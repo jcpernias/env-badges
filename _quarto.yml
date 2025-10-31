@@ -1,3 +1,8 @@
+project:
+  output-dir: _output
+  render:
+    - data_dgt.qmd
+
 toc: true
 toc-depth: 3
 toc-location: right
@@ -9,3 +14,6 @@ format:
   html:
     theme: flatly
     embed-resources: true
+
+execute:
+  freeze: auto
