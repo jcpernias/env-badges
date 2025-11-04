@@ -7,9 +7,11 @@ src_files := data_dgt data_ine
 dgt_data_files := $(addprefix data/orig/DatosMunicipalesGeneral_, \
 	$(addsuffix .xlsx, 2021 2022 2023))
 
-dgt_atlas_files := $(addprefix data/orig/, \
+ine_atlas_files := $(addprefix data/orig/, \
 	$(addsuffix .csv.xz, 30824 30832 37677))
 
+ine_census_files := $(addprefix data/orig/, \
+	$(addsuffix .csv.xz, 66620 68065))
 
 out_dir := _output
 
@@ -33,5 +35,5 @@ $(out_dir)/%.html: %.qmd
 $(out_dir)/data_dgt.html: $(dgt_data_files) data/dgt_mun_dict.csv
 
 $(out_dir)/data_ine.html: data/ine_mun_codes.csv \
-	data/ine_atlas_vars.csv $(dgt_atlas_files) \
-	data/ine_educ_labels.csv data/orig/66620.csv.xz
+	data/ine_atlas_vars.csv $(ine_atlas_files) \
+	data/ine_educ_labels.csv $(ine_census_files)
