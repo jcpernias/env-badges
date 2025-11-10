@@ -139,12 +139,13 @@ save_data(atlas_data, "ine_atlas_data.rds")
 ```{r}
 #| echo: false
 
-datasummary_skim(atlas_data, 
-                 fun_numeric = 
-                   list(Mean = Mean, SD = SD, 
-                        Min = Min, Median = Median, Max = Max, 
-                        `Missing Pct.` = PercentMissing),
-                 type = "numeric") |> 
+atlas_data |> 
+  select(-year) |> 
+  datasummary_skim(fun_numeric = 
+                     list(Mean = Mean, SD = SD, 
+                          Min = Min, Median = Median, Max = Max, 
+                          `Missing Pct.` = PercentMissing),
+                   type = "numeric") |> 
   tt_style(j = 2:7, align = "r")
 ```
 
@@ -173,12 +174,13 @@ save_data(pop_data, "ine_pop_data.rds")
 ```{r}
 #| echo: false
 
-datasummary_skim(pop_data, 
-                 fun_numeric = 
-                   list(Mean = Mean, SD = SD, 
-                        Min = Min, Median = Median, Max = Max, 
-                        `Missing Pct.` = PercentMissing),
-                 type = "numeric") |> 
+pop_data |> 
+  select(-year) |> 
+  datasummary_skim(fun_numeric = 
+                     list(Mean = Mean, SD = SD, 
+                          Min = Min, Median = Median, Max = Max, 
+                          `Missing Pct.` = PercentMissing),
+                   type = "numeric") |> 
   tt_style(j = 2:7, align = "r")
 ```
 
@@ -233,11 +235,12 @@ save_data(educ_data, "ine_educ_data.rds")
 ```{r}
 #| echo: false
 
-datasummary_skim(educ_data, 
-                 fun_numeric = 
-                   list(Mean = Mean, SD = SD, 
-                        Min = Min, Median = Median, Max = Max, 
-                        `Missing Pct.` = PercentMissing),
-                 type = "numeric") |> 
+educ_data |> 
+  select(-year) |> 
+  datasummary_skim(fun_numeric = 
+                     list(Mean = Mean, SD = SD, 
+                          Min = Min, Median = Median, Max = Max, 
+                          `Missing Pct.` = PercentMissing),
+                   type = "numeric") |> 
   tt_style(j = 2:7, align = "r")
 ```
