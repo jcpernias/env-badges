@@ -63,7 +63,7 @@ mun_codes <- read_csv(data_file("ine_mun_codes.csv"),
 En el Atlas siguen apareciendo municipios que ya no existen, o que han cambiado de provincia.
 
 | Código | Municipio    | Causa                                                  |
-|-----------------|-----------------|--------------------------------------|
+|------------------|------------------|-------------------------------------|
 | 04039  | Darrical     | Desaparece en 1997 incorporándose a Alcolea            |
 | 12066  | Gatova       | Pasa a la provincia de Valencia en 1995                |
 | 15026  | Cesuras      | Fusión en 2013 con Oza dos Ríos creándose Oza-Cesuras  |
@@ -212,7 +212,7 @@ make_factor <- function(x) {
 }
 ```
 
-Población de 15 años o más por estudios completados, tramo de edad y sexo. Datos para todos los municipios de España de 500 habitantes o más desde 2021 a 2023.
+Población de 15 años o más por estudios completados. Datos para todos los municipios de España de 500 habitantes o más desde 2021 a 2023.
 
 ```{r}
 educ_data <- read_ine_csv(raw_data_file("66620.csv.xz")) |>
