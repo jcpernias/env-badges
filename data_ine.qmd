@@ -298,10 +298,9 @@ educ_data |>
 
 ```{r}
 ine_data <- atlas_data |>
-  select(-pop) |> 
-  left_join(pop_data, by = join_by(mun_code, year))
-```
-
-```{r}
-
+  select(-c(pop, avgage, lt18pct, gt65pct, natpct)) |> 
+  left_join(pop_data, by = join_by(mun_code, year)) |> 
+  left_join(age_data, by = join_by(mun_code, year)) |> 
+  left_join(educ_data, by = join_by(mun_code, year)) |> 
+  left_join(mun_codes, by = join_by(mun_code)) 
 ```
