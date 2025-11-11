@@ -259,3 +259,22 @@ ine_data <- atlas_data |>
   left_join(pop_data, by = join_by(mun_code, year))
   
 ```
+
+```{r}
+age_data <- read_ine_csv(raw_data_file("68542.csv.xz"),
+                          col_types = "__cccin",
+                          col_names = c("Municipio", "Sexo", "Edad", 
+                                        "year", "value"),
+                          skip = 1) |> 
+  filter(!is.na(Municipio), 
+         Edad != "Todas las edades", Sexo == "Total")  |> 
+  mutate(mun_code = str_sub(Municipio, end = 5),
+         age = as.integer(str_extract(Edad, "^[0-9]+"))) |>
+  filter(value != 0) |> 
+  select(mun_code, year, age, value) |> 
+  group_by(mun_code, year) |> 
+  summarise(pop_lt_18 = sum(value * (age < 18)),
+            pop_gt_65 = sum(value * (age > 65)),
+            avg_age = weighted.mean(age, value), 
+            .groups = "drop")
+```
