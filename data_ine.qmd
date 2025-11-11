@@ -154,18 +154,25 @@ atlas_data |>
 
 ### Población
 
-Población municipal obtenidos del Censo anual de población publicado en el INE. Datos para todos los municipios de España desde 2021 a 2024. Población total y por sexo.
+Población municipal obtenidos del Censo anual de población publicado en el INE. Datos para todos los municipios de España desde 2021 a 2024. Población total, por sexo y por país de nacimiento (grandes grupos).
 
 ```{r}
-pop_data <- read_ine_csv(raw_data_file("68065.csv.xz"),
-                         col_types = "_ccin",
-                         col_names = c("mun", "sex", "year", "value"),
-                         skip = 1) |>
-  filter(!is.na(mun)) |>
-  mutate(mun_code = str_sub(mun, end = 5)) |>
-  select(-mun) |>
-  pivot_wider(names_from = sex, values_from = value) |>
-  rename(pop = Total, pop_men = Hombres, pop_women = Mujeres)
+pop_data <- read_ine_csv(raw_data_file("68538.csv.xz"),
+                          col_types = "__cccin",
+                          col_names = c("Municipio", "Sexo", "Nacimiento", 
+                                        "year", "value"),
+                          skip = 1) |> 
+  filter(!is.na(Municipio), 
+         Nacimiento %in% c("Total", "España"), Sexo != "Total") |> 
+  mutate(mun_code = str_sub(Municipio, end = 5)) |>
+  select(-Municipio) |> 
+  relocate(mun_code) |> 
+  pivot_wider(names_from = c(Sexo, Nacimiento)) |> 
+  mutate(pop = Hombres_Total + Mujeres_Total,
+         pop_native = Hombres_España + Mujeres_España) |> 
+  rename(pop_men = Hombres_Total, pop_women = Mujeres_Total) |> 
+  select(-c(Hombres_España, Mujeres_España)) |> 
+  relocate(pop, .after = year) 
 
 save_data(pop_data, "ine_pop_data.rds")
 ```
@@ -251,5 +258,4 @@ ine_data <- atlas_data |>
   select(-pop) |> 
   left_join(pop_data, by = join_by(mun_code, year))
   
-
 ```
