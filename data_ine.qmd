@@ -55,15 +55,24 @@ library(modelsummary)
 Códigos INE de los municipios.
 
 ```{r}
+reg_codes <- read_csv(data_file("ine_reg_codes.csv"), 
+                      col_types = "c")
+
+prov_codes <- read_csv(data_file("ine_prov_codes.csv"), 
+                      col_types = "_cc")
+
 mun_codes <- read_csv(data_file("ine_mun_codes.csv"),
                       col_types = "cccc") |>
-  mutate(mun_code = glue("{prov_code}{mun_order}"))
+  mutate(mun_code = glue("{prov_code}{mun_order}")) |> 
+  left_join(reg_codes, by = join_by(reg_code)) |> 
+  left_join(prov_codes, by = join_by(prov_code)) |> 
+  relocate(mun_code)
 ```
 
 En el Atlas siguen apareciendo municipios que ya no existen, o que han cambiado de provincia.
 
 | Código | Municipio    | Causa                                                  |
-|-------------------|-------------------|------------------------------------|
+|-------------------|-------------------|-----------------------------------|
 | 04039  | Darrical     | Desaparece en 1997 incorporándose a Alcolea            |
 | 12066  | Gatova       | Pasa a la provincia de Valencia en 1995                |
 | 15026  | Cesuras      | Fusión en 2013 con Oza dos Ríos creándose Oza-Cesuras  |
@@ -233,12 +242,14 @@ Variables para transformar las etiquetas que utiliza el INE para los diferentes 
 ```{r}
 
 educ_labels <- 
-  c("Educación primaria e inferior",
+  c("Total",
+    "Educación primaria e inferior",
     "Primera etapa de Educación Secundaria y similar",
     "Segunda etapa de Educación Secundaria y Educación Postsecundaria no Superior",
     "Educación superior")
 
-educ_levels <- c("ed_prim", "ed_sec_low", "ed_sec_high", "ed_sup") |> 
+educ_levels <- c("ed_all", "ed_prim", "ed_sec_low", 
+                 "ed_sec_high", "ed_sup") |> 
   set_names(educ_labels)
 ```
 
@@ -258,8 +269,7 @@ Población de 15 años o más por estudios completados. Datos para todos los mun
 
 educ_data <- read_ine_csv(raw_data_file("66620.csv.xz")) |> 
   filter(Sexo == "Total", 
-         Edad == "15 y más años", 
-         `Nivel de estudios` != "Total") |> 
+         Edad == "15 y más años") |> 
   mutate(educ = factor(educ_levels[`Nivel de estudios`],
                        levels = unname(educ_levels)),
          mun_code = str_sub(`Municipios de 500 habitantes o más`, 
