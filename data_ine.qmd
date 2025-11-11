@@ -63,7 +63,7 @@ mun_codes <- read_csv(data_file("ine_mun_codes.csv"),
 En el Atlas siguen apareciendo municipios que ya no existen, o que han cambiado de provincia.
 
 | Código | Municipio    | Causa                                                  |
-|------------------|------------------|------------------------------------|
+|-------------------|-------------------|------------------------------------|
 | 04039  | Darrical     | Desaparece en 1997 incorporándose a Alcolea            |
 | 12066  | Gatova       | Pasa a la provincia de Valencia en 1995                |
 | 15026  | Cesuras      | Fusión en 2013 con Oza dos Ríos creándose Oza-Cesuras  |
@@ -190,49 +190,82 @@ pop_data |>
   tt_style(j = 2:7, align = "r")
 ```
 
-### Educación
+## Edad
 
-En el archivo `ine_educ_labels.csv`, se encuentran las etiquetas que utiliza el INE para los diferentes valores de las variables categóricas.
+Población de los municipios por sexo y edad (año a año) para el periodo 2021-2024.
 
 ```{r}
-ine_educ_labels <- read_csv(data_file("ine_educ_labels.csv"),
-                            col_types = "ccc")
+age_data <- read_ine_csv(raw_data_file("68542.csv.xz"),
+                          col_types = "__cccin",
+                          col_names = c("Municipio", "Sexo", "Edad", 
+                                        "year", "value"),
+                          skip = 1) |> 
+  filter(!is.na(Municipio), 
+         Edad != "Todas las edades", Sexo == "Total")  |> 
+  mutate(mun_code = str_sub(Municipio, end = 5),
+         age = as.integer(str_extract(Edad, "^[0-9]+"))) |>
+  filter(value != 0) |> 
+  select(mun_code, year, age, value) |> 
+  group_by(mun_code, year) |> 
+  summarise(pop_lt_18 = sum(value * (age < 18)),
+            pop_gt_65 = sum(value * (age > 65)),
+            avg_age = weighted.mean(age, value), 
+            .groups = "drop")
 ```
 
 ```{r}
 #| echo: false
 
-tt(ine_educ_labels, width = c(0.2, 0.6, 0.2))  
-  
+age_data |> 
+  select(-year) |> 
+  datasummary_skim(fun_numeric = 
+                     list(Mean = Mean, SD = SD, 
+                          Min = Min, Median = Median, Max = Max, 
+                          `Missing Pct.` = PercentMissing),
+                   type = "numeric") |> 
+  tt_style(j = 2:7, align = "r")
 ```
 
-Función para crear factores:
+### Educación
+
+Variables para transformar las etiquetas que utiliza el INE para los diferentes niveles de estudios.
 
 ```{r}
-make_factor <- function(x) {
-  labs <- ine_educ_labels |>
-    filter(var == as_label(enquo(x)))
-  new_levels  <- labs$level
-  tbl <- new_levels
-  names(tbl) <- labs$ine_label
-  factor(tbl[x], levels = new_levels) |>
-    unname()
-}
+
+educ_labels <- 
+  c("Educación primaria e inferior",
+    "Primera etapa de Educación Secundaria y similar",
+    "Segunda etapa de Educación Secundaria y Educación Postsecundaria no Superior",
+    "Educación superior")
+
+educ_levels <- c("ed_prim", "ed_sec_low", "ed_sec_high", "ed_sup") |> 
+  set_names(educ_labels)
+```
+
+```{r}
+#| echo: false
+
+tibble(levels = unname(educ_levels),
+       INE = names(educ_levels)) |> 
+         tt(width = c(0.15, 0.85))  
+  
 ```
 
 Población de 15 años o más por estudios completados. Datos para todos los municipios de España de 500 habitantes o más desde 2021 a 2023.
 
 ```{r}
-educ_data <- read_ine_csv(raw_data_file("66620.csv.xz")) |>
-  mutate(educ = make_factor(`Nivel de estudios`),
-         age = make_factor(Edad),
-         sex = make_factor(Sexo),
-         mun_code = str_sub(`Municipios de 500 habitantes o más`, end = 5)) |>
+
+
+educ_data <- read_ine_csv(raw_data_file("66620.csv.xz")) |> 
+  filter(Sexo == "Total", 
+         Edad == "15 y más años", 
+         `Nivel de estudios` != "Total") |> 
+  mutate(educ = factor(educ_levels[`Nivel de estudios`],
+                       levels = unname(educ_levels)),
+         mun_code = str_sub(`Municipios de 500 habitantes o más`, 
+                            end = 5))  |> 
   rename(year = Periodo, value = Total) |>
-  select(-(1:4)) |> 
-  filter(age == "age_all", sex == "sex_all") |> 
-  group_by(mun_code, year, educ) |> 
-  summarise(value = sum(value), .groups = "drop") |> 
+  select(mun_code, year, educ, value) |>
   pivot_wider(names_from = educ, values_from = value)
 
 save_data(educ_data, "ine_educ_data.rds")
@@ -257,24 +290,8 @@ educ_data |>
 ine_data <- atlas_data |>
   select(-pop) |> 
   left_join(pop_data, by = join_by(mun_code, year))
-  
 ```
 
 ```{r}
-age_data <- read_ine_csv(raw_data_file("68542.csv.xz"),
-                          col_types = "__cccin",
-                          col_names = c("Municipio", "Sexo", "Edad", 
-                                        "year", "value"),
-                          skip = 1) |> 
-  filter(!is.na(Municipio), 
-         Edad != "Todas las edades", Sexo == "Total")  |> 
-  mutate(mun_code = str_sub(Municipio, end = 5),
-         age = as.integer(str_extract(Edad, "^[0-9]+"))) |>
-  filter(value != 0) |> 
-  select(mun_code, year, age, value) |> 
-  group_by(mun_code, year) |> 
-  summarise(pop_lt_18 = sum(value * (age < 18)),
-            pop_gt_65 = sum(value * (age > 65)),
-            avg_age = weighted.mean(age, value), 
-            .groups = "drop")
+
 ```
