@@ -63,7 +63,7 @@ mun_codes <- read_csv(data_file("ine_mun_codes.csv"),
 En el Atlas siguen apareciendo municipios que ya no existen, o que han cambiado de provincia.
 
 | Código | Municipio    | Causa                                                  |
-|------------------|------------------|-------------------------------------|
+|------------------|------------------|------------------------------------|
 | 04039  | Darrical     | Desaparece en 1997 incorporándose a Alcolea            |
 | 12066  | Gatova       | Pasa a la provincia de Valencia en 1995                |
 | 15026  | Cesuras      | Fusión en 2013 con Oza dos Ríos creándose Oza-Cesuras  |
@@ -243,4 +243,14 @@ educ_data |>
                           `Missing Pct.` = PercentMissing),
                    type = "numeric") |> 
   tt_style(j = 2:7, align = "r")
+```
+
+## Consolidación de las bases de datos del INE
+
+```{r}
+ine_data <- atlas_data |>
+  select(-pop) |> 
+  left_join(pop_data, by = join_by(mun_code, year))
+  
+
 ```
