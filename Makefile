@@ -11,7 +11,10 @@ ine_atlas_files := $(addprefix data/orig/, \
 	$(addsuffix .csv.xz, 30824 30832 37677))
 
 ine_census_files := $(addprefix data/orig/, \
-	$(addsuffix .csv.xz, 66620 68065))
+	$(addsuffix .csv.xz, 66620 68538 68542))
+
+ine_code_files := $(addprefix data/ine_, \
+	$(addsuffix _codes.csv, mun prov reg))
 
 out_dir := _output
 
@@ -36,4 +39,4 @@ $(out_dir)/data_dgt.html: $(dgt_data_files) data/dgt_mun_dict.csv
 
 $(out_dir)/data_ine.html: data/ine_mun_codes.csv \
 	data/ine_atlas_vars.csv $(ine_atlas_files) \
-	data/ine_educ_labels.csv $(ine_census_files)
+	$(ine_census_files) $(ine_code_files)
