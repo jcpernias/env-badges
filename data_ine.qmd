@@ -50,44 +50,6 @@ library(modelsummary)
 
 {{< include _global.qmd >}}
 
-## Códigos de CC. AA., provincias y municipios
-
-Códigos INE de los municipios.
-
-```{r}
-reg_codes <- read_csv(data_file("ine_reg_codes.csv"), 
-                      col_types = "c")
-
-prov_codes <- read_csv(data_file("ine_prov_codes.csv"), 
-                      col_types = "_cc")
-
-mun_codes <- read_csv(data_file("ine_mun_codes.csv"),
-                      col_types = "cccc") |>
-  mutate(mun_code = glue("{prov_code}{mun_order}")) |> 
-  left_join(reg_codes, by = join_by(reg_code)) |> 
-  left_join(prov_codes, by = join_by(prov_code)) |> 
-  relocate(mun_code)
-```
-
-En el Atlas siguen apareciendo municipios que ya no existen, o que han cambiado de provincia.
-
-| Código | Municipio    | Causa                                                  |
-|-------------------|-------------------|-----------------------------------|
-| 04039  | Darrical     | Desaparece en 1997 incorporándose a Alcolea            |
-| 12066  | Gatova       | Pasa a la provincia de Valencia en 1995                |
-| 15026  | Cesuras      | Fusión en 2013 con Oza dos Ríos creándose Oza-Cesuras  |
-| 15063  | Oza dos Ríos | Fusión en 2013 con Cesuras creándose Oza-Cesuras       |
-| 17122  | Palmerola    | Desaparece en 1991 incorporándose a Les Lloses         |
-| 36011  | Cerdedo      | Fusión en 2016 con Cotobade creándose Cerdedo-Cotobade |
-| 36012  | Cotobade     | Fusión en 2016 con Cerdedo creándose Cerdedo-Cotobade  |
-
-Tampoco se incluye los datos de Usansolo (código INE 48916). Segregado de Galdakoa (código INE 48036) oficialmente en diciembre de 2023. En el Atlas aparece segregado en el año 2023, pero no en el Censo anual de población.
-
-```{r}
-drop_mun_codes <- c("04039", "12066", "15026", "15063", 
-                    "17122", "36011", "36012", "48916")
-```
-
 ## Atlas de la distribución de la renta
 
 Nombres de las variables del Atlas:
@@ -124,7 +86,6 @@ read_atlas_file <- function(csv_file) {
            Periodo %in% years) |>
     mutate(mun_code = str_sub(Municipios, end = 5)) |>
     select(-c(Municipios, Distritos, Secciones)) |>
-    filter(!mun_code %in% drop_mun_codes) |>
     rename(var_label = 1, year = Periodo, value = Total)
 }
 ```
@@ -298,11 +259,66 @@ educ_data |>
 
 ## Consolidación de las bases de datos del INE
 
+Códigos INE de los municipios, provincias y regiones con sus nombres.
+
 ```{r}
-ine_data <- atlas_data |>
-  select(-c(pop, avgage, lt18pct, gt65pct, natpct)) |> 
-  left_join(pop_data, by = join_by(mun_code, year)) |> 
+reg_codes <- read_csv(data_file("ine_reg_codes.csv"), 
+                      col_types = "c")
+
+prov_codes <- read_csv(data_file("ine_prov_codes.csv"), 
+                      col_types = "_cc")
+
+mun_codes <- read_csv(data_file("ine_mun_codes.csv"),
+                      col_types = "cccc") |>
+  mutate(mun_code = glue("{prov_code}{mun_order}")) |> 
+  left_join(reg_codes, by = join_by(reg_code)) |> 
+  left_join(prov_codes, by = join_by(prov_code)) |> 
+  relocate(mun_code)
+```
+
+En el Atlas siguen apareciendo municipios que ya no existen, o que han cambiado de provincia.
+
+| Código | Municipio    | Causa                                                  |
+|-------------------|-------------------|-----------------------------------|
+| 04039  | Darrical     | Desaparece en 1997 incorporándose a Alcolea            |
+| 12066  | Gatova       | Pasa a la provincia de Valencia en 1995                |
+| 15026  | Cesuras      | Fusión en 2013 con Oza dos Ríos creándose Oza-Cesuras  |
+| 15063  | Oza dos Ríos | Fusión en 2013 con Cesuras creándose Oza-Cesuras       |
+| 17122  | Palmerola    | Desaparece en 1991 incorporándose a Les Lloses         |
+| 36011  | Cerdedo      | Fusión en 2016 con Cotobade creándose Cerdedo-Cotobade |
+| 36012  | Cotobade     | Fusión en 2016 con Cerdedo creándose Cerdedo-Cotobade  |
+
+Tampoco se incluye los datos de Usansolo (código INE 48916). Segregado de Galdakoa (código INE 48036) oficialmente en diciembre de 2023. En el Atlas aparece segregado en el año 2023, pero no en el Censo anual de población.
+
+```{r}
+drop_mun_codes <- c("04039", "12066", "15026", "15063", 
+                    "17122", "36011", "36012", "48916")
+```
+
+Consolidación de los conjuntos de datos del INE. En el resultado final se excluyen también los municipios con menos de 500 habitantes, para los cuales no hay información sobre el nivel de estudios completado.
+
+```{r}
+ine_data <- mun_codes |> 
+  filter(!mun_code %in% drop_mun_codes) |>
+  left_join(filter(pop_data), by = join_by(mun_code)) |> 
   left_join(age_data, by = join_by(mun_code, year)) |> 
-  left_join(educ_data, by = join_by(mun_code, year)) |> 
-  left_join(mun_codes, by = join_by(mun_code)) 
+  right_join(educ_data, by = join_by(mun_code, year)) |> 
+  left_join(select(atlas_data, 
+                   -c(pop, avgage, lt18pct, gt65pct, natpct)), 
+            by = join_by(mun_code, year))
+
+save_data(ine_data, "ine_data.rds")
+```
+
+```{r}
+#| echo: false
+
+ine_data |> 
+  select(-year, where(is.numeric)) |> 
+  datasummary_skim(fun_numeric = 
+                     list(Mean = Mean, SD = SD, 
+                          Min = Min, Median = Median, Max = Max, 
+                          `Missing Pct.` = PercentMissing),
+                   type = "numeric") |> 
+  tt_style(j = 2:7, align = "r")
 ```
