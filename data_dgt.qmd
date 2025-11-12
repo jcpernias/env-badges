@@ -114,7 +114,9 @@ read_dgt_file <- function(input_file, year, dict) {
             col_types = dict$excel_col_types,
             col_names = dict$name) |>
     filter(!str_detect(mun, fixed("sin especificar"))) |> #<2>
-    mutate(year = year) #<3>
+    mutate(year = year) |> #<3>
+    select(-mun) |> 
+    relocate(year, .after = ine_code)
 }
 ```
 
@@ -133,7 +135,7 @@ db <-
   bind_rows()
 ```
 
-### Escritura de datos
+### Escritura del conjunto de datos
 
 Guarda los datos en formato rds en el fichero `dgt_mun_data.rds`:
 
@@ -141,26 +143,19 @@ Guarda los datos en formato rds en el fichero `dgt_mun_data.rds`:
 save_data(db, "dgt_mun_data.rds")
 ```
 
-Variables de texto:
-
--   `ine_code`: código del municipio, como lo define el INE.
-
--   `mun`: nombre del municipio.
-
--   `prov`: nombre de la provincia.
-
--   `reg`: nombre de la comunidad autónoma.
-
 Estadísticos descriptivos de las variables numéricas:
 
 ```{r}
 #| echo: false
 
-datasummary_skim(db, 
-                 fun_numeric = 
-                   list(Mean = Mean, SD = SD, 
-                        Min = Min, Median = Median, Max = Max, 
-                        `Missing Pct.` = PercentMissing),
-                 type = "numeric") |> 
+db |> 
+  select(-year) |> 
+  datasummary_skim(fun_numeric = 
+                     list(Mean = Mean, SD = SD, 
+                          Min = Min, Median = Median, Max = Max, 
+                          `Missing Pct.` = PercentMissing),
+                   type = "numeric") |> 
   tt_style(j = 2:7, align = "r")
 ```
+
+Además de las variables numéricas, el fichero `dgt_mun_data.rds` contiene la variable de texto `ine_code`, código del municipio como lo define el INE.

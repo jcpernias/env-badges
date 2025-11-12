@@ -1,8 +1,8 @@
 column,label,name, type
 1,Código INE,ine_code, c
 2,Municipio,mun, c
-3,Provincia,prov, c
-4,Comunidad Autónoma,region, c
+3,Provincia,, c
+4,Comunidad Autónoma,, c
 5,Población Total,pop_total, i
 6,Población Hombres,pop_men, i
 7,Población Mujeres,pop_women, i
