@@ -1,16 +1,16 @@
 var, var_label
-netincp, Renta neta media por persona
-netinch, Renta neta media por hogar
-avgincu, Media de la renta por unidad de consumo
-medincu, Mediana de la renta por unidad de consumo
-grsincp, Renta bruta media por persona
-grsinch, Renta bruta media por hogar
-avgage, Edad media de la población
-lt18pct, Porcentaje de población menor de 18 años
-gt65pct, Porcentaje de población de 65 y más años
-hhsize, Tamaño medio del hogar
-hh1pct, Porcentaje de hogares unipersonales
+ninc_p, Renta neta media por persona
+ninc_hh, Renta neta media por hogar
+avg_inc_cu, Media de la renta por unidad de consumo
+med_inc_cu, Mediana de la renta por unidad de consumo
+ginc_p, Renta bruta media por persona
+ginc_hh, Renta bruta media por hogar
+avg_age, Edad media de la población
+pop_lt_18_pct, Porcentaje de población menor de 18 años
+pop_gt_65_pct, Porcentaje de población de 65 y más años
+hh_size, Tamaño medio del hogar
+hh1_pct, Porcentaje de hogares unipersonales
 pop, Población
-natpct, Porcentaje de población española
+pop_nat_pct, Porcentaje de población española
 gini, Índice de Gini
 p8020, Distribución de la renta P80/P20

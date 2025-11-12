@@ -297,7 +297,8 @@ ine_data <- mun_codes |>
   left_join(age_data, by = join_by(mun_code, year)) |> 
   right_join(educ_data, by = join_by(mun_code, year)) |> 
   left_join(select(atlas_data, 
-                   -c(pop, avgage, lt18pct, gt65pct, natpct)), 
+                   -c(pop, avg_age, pop_lt_18_pct, 
+                      pop_gt_65_pct, pop_nat_pct)), 
             by = join_by(mun_code, year))
 
 save_data(ine_data, "ine_data.rds")
