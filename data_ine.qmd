@@ -81,9 +81,11 @@ En el Atlas siguen apareciendo municipios que ya no existen, o que han cambiado 
 | 36011  | Cerdedo      | Fusión en 2016 con Cotobade creándose Cerdedo-Cotobade |
 | 36012  | Cotobade     | Fusión en 2016 con Cerdedo creándose Cerdedo-Cotobade  |
 
+Tampoco se incluye los datos de Usansolo (código INE 48916). Segregado de Galdakoa (código INE 48036) oficialmente en diciembre de 2023. En el Atlas aparece segregado en el año 2023, pero no en el Censo anual de población.
+
 ```{r}
 drop_mun_codes <- c("04039", "12066", "15026", "15063", 
-                    "17122", "36011", "36012")
+                    "17122", "36011", "36012", "48916")
 ```
 
 ## Atlas de la distribución de la renta
