@@ -307,7 +307,7 @@ save_data(ine_data, "ine_data.rds")
 #| echo: false
 
 ine_data |> 
-  select(-year, where(is.numeric)) |> 
+  select(where(is.numeric), -year) |> 
   datasummary_skim(fun_numeric = 
                      list(Mean = Mean, SD = SD, 
                           Min = Min, Median = Median, Max = Max, 
