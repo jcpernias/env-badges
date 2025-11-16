@@ -3,6 +3,7 @@ project:
   render:
     - data_ine.qmd
     - data_dgt.qmd
+    - regressions.qmd
 
 toc: true
 toc-depth: 3

@@ -1,0 +1,107 @@
+---
+title: "Regresiones proporción distintivos"
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+library(tidyverse) 
+
+# Datos del INE. Elimina municipios fuera de la provincia
+ine_data <- readRDS("data/ine_data.rds")  |> 
+  filter(!reg_name %in% c("Balears (Illes)", "Canarias", 
+                          "Ceuta", "Melilla"))
+
+# Determina los municipios que no superan en ningún año
+# un umbral de población.
+low_pop_thresh <- 1000
+low_pop <- ine_data |>
+  summarise(min_pop = min(pop), .by = mun_code) |>
+  filter(min_pop < low_pop_thresh)
+
+# Datos de la DGT. Elimina variables de población.
+dgt_data <- readRDS("data/dgt_mun_data.rds") |> 
+  select(-starts_with("pop_"))
+
+# Determina municipios para los que no hay datos del parque 
+# en algún año
+mun_missing_data <- dgt_data |> 
+  filter(is.na(fleet)) |> 
+  pull(ine_code) |> unique()
+
+# Combina datos de INE y DGT
+db <-  ine_data |> 
+  anti_join(low_pop, by = join_by(mun_code)) |> 
+  left_join(dgt_data, 
+            by = join_by(mun_code == ine_code, year)) |> 
+  filter(!mun_code %in% mun_missing_data)
+```
+
+```{r}
+reg_db <- db |>
+  mutate(pct_0 = badge_0 / fleet * 100,
+         pct_eco = badge_eco / fleet * 100,
+         pct_c = badge_c / fleet * 100,
+         pct_b = badge_b / fleet * 100,
+         pct_none = badge_none / fleet * 100,
+         pc_0 = badge_0 / pop * 100,
+         pc_eco = badge_eco / pop * 100,
+         pc_c = badge_c / pop * 100,
+         pc_b = badge_b / pop * 100,
+         pc_none = badge_none / pop * 100,
+         pct_pop_lt_18 = pop_lt_18 / pop * 100,
+         pct_pop_gt_65 = pop_gt_65 / pop * 100,
+         pct_pop_native = pop_native / pop * 100,
+         pct_women = pop_women / pop * 100,
+         pct_lic = lic_all / pop * 100,
+         pct_lic_women = lic_women / lic_all * 100,
+         pct_prim = ed_prim / pop * 100,
+         pct_sec_low = ed_sec_low / ed_all * 100,
+         pct_sec_high = ed_sec_high / ed_all * 100,
+         pct_sup = ed_sup / ed_all * 100,
+         y2022 = if_else(year == 2022, 1, 0),
+         y2023 = if_else(year == 2023, 1, 0),
+         linc = log(ninc_hh))
+```
+
+```{r}
+library(plm)
+
+frml <-  ~ y2022 + y2023 + 
+  pct_women +  
+  pct_prim + pct_sec_low + pct_sec_high + 
+  linc +
+  pct_pop_lt_18 + pct_pop_gt_65 +
+  hh_size + pct_pop_native
+```
+
+```{r}
+plm(update(frml, pct_0 ~ .),     
+    data = reg_db, index = c("mun_code", "year")) |>
+  summary(vcov = vcovHC)
+```
+
+```{r}
+plm(update(frml, pct_eco ~ .),     
+    data = reg_db, index = c("mun_code", "year")) |>
+  summary(vcov = vcovHC)
+```
+
+```{r}
+plm(update(frml, pct_c ~ .),     
+    data = reg_db, index = c("mun_code", "year")) |>
+  summary(vcov = vcovHC)
+```
+
+```{r}
+plm(update(frml, pct_b ~ .),     
+    data = reg_db, index = c("mun_code", "year")) |>
+  summary(vcov = vcovHC)
+```
+
+```{r}
+plm(update(frml, pct_none ~ .),     
+    data = reg_db, index = c("mun_code", "year")) |>
+  summary(vcov = vcovHC)
+```

@@ -2,7 +2,8 @@ SHELL := /bin/sh
 
 RSCRIPT := Rscript --no-save --no-restore
 
-src_files := data_dgt data_ine
+src_files := data_dgt data_ine \
+	regressions
 
 dgt_data_files := $(addprefix data/orig/DatosMunicipalesGeneral_, \
 	$(addsuffix .xlsx, 2021 2022 2023))
@@ -15,6 +16,9 @@ ine_census_files := $(addprefix data/orig/, \
 
 ine_code_files := $(addprefix data/ine_, \
 	$(addsuffix _codes.csv, mun prov reg))
+
+data_files := $(addprefix data/, \
+	$(addsuffix .rds, ine_data dgt_mun_data))
 
 out_dir := _output
 
@@ -40,3 +44,5 @@ $(out_dir)/data_dgt.html: $(dgt_data_files) data/dgt_mun_dict.csv
 $(out_dir)/data_ine.html: data/ine_mun_codes.csv \
 	data/ine_atlas_vars.csv $(ine_atlas_files) \
 	$(ine_census_files) $(ine_code_files)
+
+$(out_dir)/regressions.html: $(data_files)
