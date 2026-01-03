@@ -5,38 +5,78 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r}
-library(tidyverse) 
+# Preliminares
 
-# Datos del INE. Elimina municipios fuera de la provincia
+## Paquetes
+
+Lectura y transformación de los datos
+
+```{r}
+#| messages: false
+#| warning: false
+
+library(tidyverse)
+```
+
+Regresión con datos de panel.
+
+```{r}
+#| warning: false
+
+library(plm)
+```
+
+# Datos
+
+## INE
+
+Datos del INE. Elimina municipios fuera de la península.
+
+```{r}
 ine_data <- readRDS("data/ine_data.rds")  |> 
   filter(!reg_name %in% c("Balears (Illes)", "Canarias", 
                           "Ceuta", "Melilla"))
+```
 
-# Determina los municipios que no superan en ningún año
-# un umbral de población.
+Determina los municipios que no superan en ningún año un umbral de población.
+
+```{r}
 low_pop_thresh <- 1000
 low_pop <- ine_data |>
   summarise(min_pop = min(pop), .by = mun_code) |>
   filter(min_pop < low_pop_thresh)
+```
 
-# Datos de la DGT. Elimina variables de población.
+## DGT
+
+Datos de la DGT. Elimina variables de población.
+
+```{r}
 dgt_data <- readRDS("data/dgt_mun_data.rds") |> 
   select(-starts_with("pop_"))
+```
 
-# Determina municipios para los que no hay datos del parque 
-# en algún año
+Determina los municipios para los que no la DGT no proporciona datos del parque de vehículos en algún año.
+
+```{r}
 mun_missing_data <- dgt_data |> 
   filter(is.na(fleet)) |> 
   pull(ine_code) |> unique()
+```
 
-# Combina datos de INE y DGT
+## Combinación de las bases de datos
+
+Combina datos de INE y DGT
+
+```{r}
 db <-  ine_data |> 
   anti_join(low_pop, by = join_by(mun_code)) |> 
   left_join(dgt_data, 
             by = join_by(mun_code == ine_code, year)) |> 
   filter(!mun_code %in% mun_missing_data)
 ```
+
+Transformación de variables.
 
 ```{r}
 reg_db <- db |>
@@ -65,9 +105,11 @@ reg_db <- db |>
          linc = log(ninc_hh))
 ```
 
-```{r}
-library(plm)
+# Regresiones
 
+Variables explicativas que se usan en cada una de las regresiones.
+
+```{r}
 frml <-  ~ y2022 + y2023 + 
   pct_women +  
   pct_prim + pct_sec_low + pct_sec_high + 
