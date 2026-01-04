@@ -119,6 +119,29 @@ frml <-  ~ y2022 + y2023 +
 ```
 
 ```{r}
+library(rlang)
+
+update_lhs <- function(frml, ...) {
+  args <- ensyms(...)
+  labels <- map_chr(args, as_label)
+  map(args, \(x) rlang::`f_lhs<-`(frml, x)) |> 
+    setNames(labels)
+}
+```
+
+```{r}
+
+estimate_frml <- function(frml) {
+  plm(frml, data = reg_db, index = c("mun_code", "year")) |>
+  summary(vcov = vcovHC)
+}
+
+regr_list <- 
+  update_lhs(frml, pct_0, pct_eco, pct_c, pct_b, pct_none) |> 
+  map(estimate_frml)
+```
+
+```{r}
 plm(update(frml, pct_0 ~ .),     
     data = reg_db, index = c("mun_code", "year")) |>
   summary(vcov = vcovHC)
