@@ -135,19 +135,26 @@ update_lhs <- function(frml, ...) {
 
 library(modelsummary)
 
-estimate_frml <- function(frml) {
-  plm(frml, data = reg_db, index = c("mun_code", "year")) 
+pdata <-  reg_db |> 
+  pdata.frame(index = c("mun_code", "year"), row.names = FALSE)
+
+fe_regr <- function(frml) {
+  plm(frml, data = pdata) 
+}
+
+fe_vcov <- function(mod) {
+  plm::vcovHC(mod, method = "arellano", type = "HC2")
 }
 
 regr_list <- 
   update_lhs(frml, pct_0, pct_eco, pct_c, pct_b, pct_none) |> 
-  map(estimate_frml)
+  map(fe_regr)
 
 modelsummary(regr_list,
              stars = c("*" = .1, "**" = .05, "***" = .01),
              estimate = "{estimate}{stars}",
              gof_omit = "AIC|BIC",
-             vcov = plm::vcovHC)
+             vcov = fe_vcov)
 ```
 
 ```{r}
