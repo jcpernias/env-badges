@@ -119,6 +119,8 @@ frml <-  ~ y2022 + y2023 +
 ```
 
 ```{r}
+#| warning: false
+
 library(rlang)
 
 update_lhs <- function(frml, ...) {
@@ -131,14 +133,21 @@ update_lhs <- function(frml, ...) {
 
 ```{r}
 
+library(modelsummary)
+
 estimate_frml <- function(frml) {
-  plm(frml, data = reg_db, index = c("mun_code", "year")) |>
-  summary(vcov = vcovHC)
+  plm(frml, data = reg_db, index = c("mun_code", "year")) 
 }
 
 regr_list <- 
   update_lhs(frml, pct_0, pct_eco, pct_c, pct_b, pct_none) |> 
   map(estimate_frml)
+
+modelsummary(regr_list,
+             stars = c("*" = .1, "**" = .05, "***" = .01),
+             estimate = "{estimate}{stars}",
+             gof_omit = "AIC|BIC",
+             vcov = plm::vcovHC)
 ```
 
 ```{r}
