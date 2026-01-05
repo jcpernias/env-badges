@@ -30,7 +30,7 @@ library(plm)
 
 ## INE
 
-Datos del INE. Elimina municipios fuera de la península.
+Lee los datos del INE descartando los municipios situados fuera de la península.
 
 ```{r}
 ine_data <- readRDS("data/ine_data.rds")  |> 
@@ -38,18 +38,19 @@ ine_data <- readRDS("data/ine_data.rds")  |>
                           "Ceuta", "Melilla"))
 ```
 
-Determina los municipios que no superan en ningún año un umbral de población.
+Determina los municipios que no superan en ningún año un umbral de población, `low_pop_thresh`.
 
 ```{r}
 low_pop_thresh <- 1000
-low_pop <- ine_data |>
+mun_low_pop <- ine_data |>
   summarise(min_pop = min(pop), .by = mun_code) |>
-  filter(min_pop < low_pop_thresh)
+  filter(min_pop < low_pop_thresh) |> 
+  pull(mun_code)
 ```
 
 ## DGT
 
-Datos de la DGT. Elimina variables de población.
+Lee los datos de la DGT y elimina las variables de población, las cuales, en ocasiones, no coinciden con los datos del INE.
 
 ```{r}
 dgt_data <- readRDS("data/dgt_mun_data.rds") |> 
@@ -59,37 +60,30 @@ dgt_data <- readRDS("data/dgt_mun_data.rds") |>
 Determina los municipios para los que no la DGT no proporciona datos del parque de vehículos en algún año.
 
 ```{r}
-mun_missing_data <- dgt_data |> 
+mun_missing_fleet <- dgt_data |> 
   filter(is.na(fleet)) |> 
   pull(ine_code) |> unique()
 ```
 
 ## Combinación de las bases de datos
 
-Combina datos de INE y DGT
+Combina las base de datos del INE y de la DGT. Elimina los municipios que no superan los `r low_pop_thresh` habitantes (`r length(mun_low_pop)` municipios) y aquellos para los que no está disponible en algún año los datos del parque de vehículos (`r length(mun_missing_fleet)` municipios). Se descartan `r length(union(mun_missing_fleet, mun_low_pop))` municipios en total. Finalmente se crean algunas variables que se usarán en las regresiones.
 
 ```{r}
-db <-  ine_data |> 
-  anti_join(low_pop, by = join_by(mun_code)) |> 
+db <- ine_data |> 
   left_join(dgt_data, 
             by = join_by(mun_code == ine_code, year)) |> 
-  filter(!mun_code %in% mun_missing_data)
-```
-
-Transformación de variables.
-
-```{r}
-reg_db <- db |>
+  filter(!mun_code %in% union(mun_missing_fleet, mun_low_pop)) |>
   mutate(pct_0 = badge_0 / fleet * 100,
          pct_eco = badge_eco / fleet * 100,
          pct_c = badge_c / fleet * 100,
          pct_b = badge_b / fleet * 100,
          pct_none = badge_none / fleet * 100,
-         pc_0 = badge_0 / pop * 100,
-         pc_eco = badge_eco / pop * 100,
-         pc_c = badge_c / pop * 100,
-         pc_b = badge_b / pop * 100,
-         pc_none = badge_none / pop * 100,
+         pc_0 = badge_0 / pop,
+         pc_eco = badge_eco / pop,
+         pc_c = badge_c / pop,
+         pc_b = badge_b / pop,
+         pc_none = badge_none / pop,
          pct_pop_lt_18 = pop_lt_18 / pop * 100,
          pct_pop_gt_65 = pop_gt_65 / pop * 100,
          pct_pop_native = pop_native / pop * 100,
