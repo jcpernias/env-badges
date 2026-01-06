@@ -67,7 +67,7 @@ mun_missing_fleet <- dgt_data |>
 
 ## Combinación de las bases de datos
 
-Combina las base de datos del INE y de la DGT. Elimina los municipios que no superan los `r low_pop_thresh` habitantes (`r length(mun_low_pop)` municipios) y aquellos para los que no está disponible en algún año los datos del parque de vehículos (`r length(mun_missing_fleet)` municipios). Se descartan `r length(union(mun_missing_fleet, mun_low_pop))` municipios en total. Finalmente se crean algunas variables que se usarán en las regresiones.
+Combina las base de datos del INE y de la DGT. Elimina los municipios que no superan los `r low_pop_thresh` habitantes (`r length(mun_low_pop)` municipios) y aquellos para los que no está disponible en algún año los datos del parque de vehículos (`r length(mun_missing_fleet)` municipios). Se descartan `r length(union(mun_missing_fleet, mun_low_pop))` municipios en total. Finalmente, se crean algunas variables que se usarán en las regresiones.
 
 ```{r}
 db <- ine_data |> 
@@ -98,6 +98,26 @@ db <- ine_data |>
          y2023 = if_else(year == 2023, 1, 0),
          linc = log(ninc_hh))
 ```
+
+Variables creadas:
+
+-   `pct_0`, `pct_eco`, `pct_c`, `pct_b`, `pct_none`: porcentaje que representa cada categoría ambiental sobre el total del parque de cada municipio.
+
+-   `pc_0`, `pc_eco`, `pc_c`, `pc_b`, `pc_none`: número de vehículos de cada categoría ambiental per cápita.
+
+-   `pct_pop_lt_18`, `pct_pop_gt_65`: porcentaje de población con menos de 18 años y con más de 65 años, respectivamente.
+
+-   `pct_pop_native`: porcentaje de población nacida en España.
+
+-   `pct_lic`: porcentaje de personas con permiso de conducir sobre la población total del municipio.
+
+-   `pct_lic_women`: porcentaje de mujeres con permiso de conducir sobre el total de mujeres.
+
+-   `pct_prim`, `pct_sec_low`, `pct_sec_high`, `pct_sup`: porcentajes sobre la población mayor de 15 años de individuos con estudios primarios, secundarios bajos, secundarios altos y superiores.
+
+-   `linc`: logaritmo de la renta neta media de los hogares.
+
+-   `y2022`, `y2023`: ficticias temporales.
 
 # Regresiones
 
