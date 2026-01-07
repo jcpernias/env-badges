@@ -168,6 +168,10 @@ db |>
   desc_table() 
 ```
 
+::: callout-warning
+Correlación entre los cambios en las diferentes categorías de vehículos.
+:::
+
 # Regresiones
 
 ## Funciones
