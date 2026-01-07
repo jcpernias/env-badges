@@ -9,7 +9,7 @@ editor_options:
 
 ## Paquetes
 
-Lectura y transformación de los datos
+Lectura y transformación de los datos:
 
 ```{r}
 #| messages: false
@@ -18,12 +18,26 @@ Lectura y transformación de los datos
 library(tidyverse)
 ```
 
-Regresión con datos de panel.
+Regresión con datos de panel:
 
 ```{r}
 #| warning: false
 
 library(plm)
+```
+
+Manipulación de fórmulas:
+
+```{r}
+#| warning: false
+
+library(rlang)
+```
+
+Tablas:
+
+```{r}
+library(modelsummary)
 ```
 
 # Datos
@@ -133,10 +147,6 @@ frml <-  ~ y2022 + y2023 +
 ```
 
 ```{r}
-#| warning: false
-
-library(rlang)
-
 update_lhs <- function(frml, ...) {
   args <- ensyms(...)
   labels <- map_chr(args, as_label)
@@ -152,9 +162,6 @@ fe_vcov <- function(mod) {
 ```
 
 ```{r}
-
-library(modelsummary)
-
 reg_db <-  db |> 
   pdata.frame(index = c("mun_code", "year"), row.names = FALSE)
 
