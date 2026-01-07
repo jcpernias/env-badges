@@ -125,13 +125,17 @@ Variables creadas:
 
 -   `pct_lic`: porcentaje de personas con permiso de conducir sobre la población total del municipio.
 
--   `pct_lic_women`: porcentaje de mujeres con permiso de conducir sobre el total de mujeres.
+-   `pct_lic_women`: porcentaje de mujeres con permiso de conducir sobre el total de permisos.
 
 -   `pct_prim`, `pct_sec_low`, `pct_sec_high`, `pct_sup`: porcentajes sobre la población mayor de 15 años de individuos con estudios primarios, secundarios bajos, secundarios altos y superiores.
 
 -   `linc`: logaritmo de la renta neta media de los hogares.
 
 -   `y2022`, `y2023`: ficticias temporales.
+
+::: callout-caution
+Quizá sea mejor usar el porcentaje de conductoras con respecto al total de mujeres.
+:::
 
 # Regresiones
 
