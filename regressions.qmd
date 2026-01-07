@@ -146,12 +146,27 @@ Quizá sea mejor usar el porcentaje de conductoras con respecto al total de muje
 :::
 
 ::: callout-warning
-Estadísticos descriptivos.
-:::
-
-::: callout-warning
 Definir otras variables usadas en las regresiones.
 :::
+
+## Estadísticos descriptivos
+
+```{r}
+desc_table <- function(x) {
+  datasummary(All(x) * year ~ (mean + sd + min + max), data = x)
+}
+
+db |>
+  mutate(year = factor(year)) |> 
+  select(c(avg_age, hh_size, hh1_pct, gini, p8020, fleet_age,
+           pct_0, pct_eco, pct_c, pct_b, pct_none,
+           pc_0, pc_eco, pc_c, pc_b, pc_none,
+           pct_pop_lt_18, pct_pop_gt_65, pct_pop_native,
+           pct_women, pct_lic, pct_lic_women, 
+           pct_prim, pct_sec_low, pct_sec_high, pct_sup,
+           linc, year)) |> 
+  desc_table() 
+```
 
 # Regresiones
 
