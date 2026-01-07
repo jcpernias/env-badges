@@ -141,22 +141,21 @@ Variables creadas:
 
 -   `y2022`, `y2023`: ficticias temporales.
 
-::: callout-caution
+::: callout-warning
 Quizá sea mejor usar el porcentaje de conductoras con respecto al total de mujeres.
+:::
+
+::: callout-warning
+Estadísticos descriptivos.
+:::
+
+::: callout-warning
+Definir otras variables usadas en las regresiones.
 :::
 
 # Regresiones
 
-Variables explicativas que se usan en cada una de las regresiones.
-
-```{r}
-frml <-  ~ y2022 + y2023 + 
-  pct_women +  
-  pct_prim + pct_sec_low + pct_sec_high + 
-  linc +
-  pct_pop_lt_18 + pct_pop_gt_65 +
-  hh_size + pct_pop_native
-```
+## Funciones
 
 ```{r}
 update_lhs <- function(frml, ...) {
@@ -176,17 +175,68 @@ fe_vcov <- function(mod) {
 ```{r}
 reg_db <-  db |> 
   pdata.frame(index = c("mun_code", "year"), row.names = FALSE)
+```
 
+## Regresiones de la proporción de distintivos
+
+Variables explicativas que se usan en cada una de las regresiones.
+
+```{r}
+frml <-  ~ y2022 + y2023 + 
+  pct_women +  
+  pct_prim + pct_sec_low + pct_sec_high + 
+  linc +
+  pct_pop_lt_18 + pct_pop_gt_65 +
+  hh_size + pct_pop_native
+```
+
+Crea una lista de fórmulas añadiendo las diferentes variables dependientes a la fórmula que especifica las variables explicativas y estima por efectos fijos cada una de las regresiones.
+
+```{r}
 regr_list <- 
   update_lhs(frml, pct_0, pct_eco, pct_c, pct_b, pct_none) |> 
   map(\(frml) plm(frml, data = reg_db))
+```
 
+Tabla con los resultados de la estimación por efectos fijos. Los errores típicos son robustos a heteroscedasticidad y autocorrelación arbitraria dentro de cada unidad de corte transversal.
+
+```{r}
 modelsummary(regr_list,
              stars = c("*" = .1, "**" = .05, "***" = .01),
              estimate = "{estimate}{stars}",
              gof_omit = "AIC|BIC",
              vcov = fe_vcov)
 ```
+
+::: callout-warning
+-   Pasar a notas de la tabla la información que no cambia de regresión a regresión (número de observaciones, tipo de errores típicos, etc.).
+
+-   ¿Que R2 se usa? El R2 ajustado no tiene mucho sentido, ¿no?
+
+-   Estadísticos F para cada regresión.
+
+-   Falta el número de periodos temporales y el número de unidades usadas.
+
+-   ¿Signos negativos?
+
+-   ¿Columna para los asteriscos?
+
+-   Nota con la leyenda de los asteriscos.
+
+-   En general, notas.
+:::
+
+::: callout-warning
+Otras regresiones:
+
+-   Número de vehículos per cápita.
+
+-   Variación del numero (o proporción) de vehículos.
+:::
+
+::: callout-warning
+A partir de aquí es código antiguo que solo se conserva para confirmar resultados. Eventualmente desaparecerá.
+:::
 
 ```{r}
 plm(update(frml, pct_0 ~ .),     
