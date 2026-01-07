@@ -71,7 +71,7 @@ dgt_data <- readRDS("data/dgt_mun_data.rds") |>
   select(-starts_with("pop_"))
 ```
 
-Determina los municipios para los que no la DGT no proporciona datos del parque de vehículos en algún año.
+Determina los municipios para los que la DGT no proporciona datos del parque de vehículos en algún año.
 
 ```{r}
 mun_missing_fleet <- dgt_data |> 
