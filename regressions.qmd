@@ -204,7 +204,8 @@ frml <-  ~ y2022 + y2023 +
   pct_prim + pct_sec_low + pct_sec_high + 
   linc +
   pct_pop_lt_18 + pct_pop_gt_65 +
-  hh_size + pct_pop_native
+  hh_size + hh1_pct +
+  pct_pop_native
 ```
 
 Crea una lista de fórmulas añadiendo las diferentes variables dependientes a la fórmula que especifica las variables explicativas y estima por efectos fijos cada una de las regresiones.
