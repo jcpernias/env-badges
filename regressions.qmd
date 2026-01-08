@@ -1,8 +1,11 @@
 ---
-title: "Regresiones"
+title: "Regresiones (municipios con más de `r params$low_pop_thresh` habitantes)"
 editor: visual
 editor_options: 
   chunk_output_type: console
+
+params:
+  low_pop_thresh: 2500
 ---
 
 # Preliminares
@@ -52,13 +55,12 @@ ine_data <- readRDS("data/ine_data.rds")  |>
                           "Ceuta", "Melilla"))
 ```
 
-Determina los municipios que no superan en ningún año un umbral de población, `low_pop_thresh`.
+Determina los municipios cuya población es menor de `r params$low_pop_thresh` habitantes en todos los años de la muestra.
 
 ```{r}
-low_pop_thresh <- 1000
 mun_low_pop <- ine_data |>
   summarise(min_pop = min(pop), .by = mun_code) |>
-  filter(min_pop < low_pop_thresh) |> 
+  filter(min_pop < params$low_pop_thresh) |> 
   pull(mun_code)
 ```
 
@@ -89,7 +91,7 @@ Falta incorporar los datos del CIS.
 
 ## Combinación de las bases de datos
 
-Combina las base de datos del INE y de la DGT. Elimina los municipios que no superan los `r low_pop_thresh` habitantes (`r length(mun_low_pop)` municipios) y aquellos para los que no está disponible en algún año los datos del parque de vehículos (`r length(mun_missing_dgt)` municipios). Se descartan `r length(union(mun_missing_dgt, mun_low_pop))` municipios en total. Finalmente, se crean algunas variables que se usarán en las regresiones.
+Combina las base de datos del INE y de la DGT. Elimina los municipios que no superan los `r params$low_pop_thresh` habitantes (`r length(mun_low_pop)` municipios) y aquellos para los que no está disponible en algún año los datos del parque de vehículos (`r length(mun_missing_dgt)` municipios). Se descartan `r length(union(mun_missing_dgt, mun_low_pop))` municipios en total. Finalmente, se crean algunas variables que se usarán en las regresiones.
 
 ```{r}
 db <- ine_data |> 
