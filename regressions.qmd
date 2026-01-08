@@ -113,7 +113,7 @@ db <- ine_data |>
          pct_pop_native = pop_native / pop * 100,
          pct_women = pop_women / pop * 100,
          pct_lic = lic_all / pop * 100,
-         pct_lic_women = lic_women / lic_all * 100,
+         pct_lic_women = lic_women / pop_women * 100,
          pct_prim = ed_prim / pop * 100,
          pct_sec_low = ed_sec_low / ed_all * 100,
          pct_sec_high = ed_sec_high / ed_all * 100,
@@ -142,10 +142,6 @@ Variables creadas:
 -   `linc`: logaritmo de la renta neta media de los hogares.
 
 -   `y2022`, `y2023`: ficticias temporales.
-
-::: callout-warning
-Quizá sea mejor usar el porcentaje de conductoras con respecto al total de mujeres.
-:::
 
 ::: callout-warning
 Definir otras variables usadas en las regresiones.
