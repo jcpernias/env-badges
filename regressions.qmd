@@ -169,6 +169,13 @@ Variables creadas:
 Definir otras variables usadas en las regresiones.
 :::
 
+Establece las variables índice que identifican, por un lado, cada uno de los municipios y, por otro lado, los años.
+
+```{r}
+reg_db <-  db |> 
+  pdata.frame(index = c("mun_code", "year"), row.names = FALSE)
+```
+
 ## Estadísticos descriptivos
 
 ```{r}
