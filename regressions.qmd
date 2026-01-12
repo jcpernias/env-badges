@@ -225,6 +225,19 @@ Correlación entre los cambios en las diferentes categorías de vehículos.
     }
     ```
 
+-   `fe_est`: estimación efectos fijos. Devuelve una lista con dos elementos: `fit` es el modelo estimado y `vcov` es matriz de covarianzas calculada con la función que se pasa como argumento o `NULL` si no se pasa ninguna función.
+
+    ```{r}
+    fe_est <- function(frml, data, vcov = NULL) {
+      x <- plm(frml, data = data)
+      vx <- NULL
+      if (!is.null(vcov)) {
+        vx <- vcov(x) 
+      }
+      list(fit = x, vcov = vx)
+    }
+    ```
+
 ## Regresiones de la proporción de distintivos
 
 Variables explicativas que se usan en cada una de las regresiones.
@@ -244,7 +257,7 @@ Crea una lista de fórmulas añadiendo las diferentes variables dependientes a l
 ```{r}
 regr_list <- 
   update_lhs(frml, pct_0, pct_eco, pct_c, pct_b, pct_none) |> 
-  map(\(frml) plm(frml, data = reg_db))
+  map(\(frml) fe_est(frml, data = reg_db, vcov = fe_vcov))
 ```
 
 Tabla con los resultados de la estimación por efectos fijos. Los errores típicos son robustos a heteroscedasticidad y autocorrelación arbitraria dentro de cada unidad de corte transversal.
