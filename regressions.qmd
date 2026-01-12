@@ -196,25 +196,24 @@ Correlación entre los cambios en las diferentes categorías de vehículos.
 
 ## Funciones
 
-```{r}
-update_lhs <- function(frml, ...) {
-  args <- ensyms(...)
-  labels <- map_chr(args, as_label)
-  map(args, \(x) rlang::`f_lhs<-`(frml, x)) |> 
+-   `update_lhs`: devuelve una lista de fórmulas que mantiene el lado derecho de `frml` y establece el lado izquierdo a cada uno de los restantes argumentos. Nombra cada fórmula con el símbolo usado en el lado izquierdo.
+
+    ```{r}
+    update_lhs <- function(frml, ...) {
+      args <- ensyms(...)
+      labels <- map_chr(args, as_label)
+      map(args, \(x) rlang::`f_lhs<-`(frml, x)) |> 
     setNames(labels)
-}
-```
+    }
+    ```
 
-```{r}
-fe_vcov <- function(mod) {
-  plm::vcovHC(mod, method = "arellano", type = "HC2")
-}
-```
+-   `fe_vcov`: calcula una matriz de covarianzas del estimador intragrupos que es robusta a heteroscedasticidad y autocorrelación (Arellano). Utiliza la corrección de muestras finitas $HC_2$ (usando $\hat{u_t}^2/(1 - \hat{h_t})$ en los elementos de la diagonal de $\hat\Omega_i$).
 
-```{r}
-reg_db <-  db |> 
-  pdata.frame(index = c("mun_code", "year"), row.names = FALSE)
-```
+    ```{r}
+    fe_vcov <- function(mod) {
+      plm::vcovHC(mod, method = "arellano", type = "HC2")
+    }
+    ```
 
 ## Regresiones de la proporción de distintivos
 
