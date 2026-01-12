@@ -17,49 +17,53 @@ format:
 
 ## Paquetes
 
-Lectura y transformación de los datos:
+-   `tidyverse`: lectura y transformación de los datos.
 
-```{r}
-#| messages: false
-#| warning: false
+    ```{r}
+    #| messages: false
+    #| warning: false
 
-library(tidyverse)
-```
+    library(tidyverse)
+    ```
 
-Regresión con datos de panel:
+-   `plm`: regresión con datos de panel.
 
-```{r}
-#| warning: false
+    ```{r}
+    #| warning: false
 
-library(plm)
-```
+    library(plm)
+    ```
 
-Contraste de hipótesis:
+-   `car`: contrastes de Wald.
 
-```{r}
-#| warning: false
+    ```{r}
+    #| warning: false
 
-library(car)
-```
+    library(car)
+    ```
 
-Manipulación de fórmulas:
+-   `rlang`: Manipulación de fórmulas:
 
-```{r}
-#| warning: false
+    ```{r}
+    #| warning: false
 
-library(rlang)
-```
+    library(rlang)
+    ```
 
-Tablas:
+-   `tinytable`, `modelsummary`, `huxtable`, `broom`: Tablas.
 
-```{r}
-#| warning: false
+    ```{r}
+    #| warning: false
 
-library(tinytable)
-library(huxtable)
-library(modelsummary)
-library(broom)
-```
+    library(tinytable)
+    library(huxtable)
+    library(modelsummary)
+    library(broom)
+    ```
+
+::: callout-warning
+Probablemente, sería mejor sustituir `tinytable` y `modelsummary`.
+:::
 
 # Datos
 
