@@ -235,14 +235,14 @@ Tabla con los resultados de la estimación por efectos fijos. Los errores típic
 modelsummary(regr_list,
              stars = c("*" = .1, "**" = .05, "***" = .01),
              estimate = "{estimate}{stars}",
-             gof_omit = "AIC|BIC",
+             gof_omit = "AIC|BIC|Adj.|Num.|Errors|RMSE",
              vcov = fe_vcov)
 ```
 
 ::: callout-warning
 -   Pasar a notas de la tabla la información que no cambia de regresión a regresión (número de observaciones, tipo de errores típicos, etc.).
 
--   ¿Que R2 se usa? El R2 ajustado no tiene mucho sentido, ¿no?
+-   ~~¿Que R2 se usa? El R2 ajustado no tiene mucho sentido, ¿no?~~
 
 -   Estadísticos F para cada regresión.
 
