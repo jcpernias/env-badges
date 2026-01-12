@@ -265,6 +265,95 @@ Otras regresiones:
 -   Variación del numero (o proporción) de vehículos.
 :::
 
+Contrastes homogeneidad efectos individuales. Estos contrastes comparan el ajuste de MCO con el del estimador intragrupos. No son robustos a heteroscedasticidad y autocorrelación. Dado que los efectos individuales no se pueden estimar consistentemente cuando T es fijo, es casi seguro que no existan versiones robustas.
+
+```{r}
+#| warning: false
+
+indiv_effects_test <- function(x) {
+  pFtest(as.formula(x), 
+         data = reg_db, effect = "individual") |>
+    tidy()
+}
+
+regr_tests_table <- function(rlist, test_func) {
+  rlist |> 
+    map(test_func) |> 
+    list_rbind() |> 
+    mutate(model = names(rlist)) |> 
+    relocate(model) 
+}
+
+format_tests_table <- function(tbl) {
+  tbl |> 
+    hux() |> 
+    set_width(0.95) |> 
+    set_left_padding(4) |> 
+    set_right_padding(4) |> 
+    set_top_border(row = 1, col = everywhere) |> 
+    set_bottom_border(row = 1, col = everywhere) |> 
+    set_bottom_border(row = 6, col = everywhere) |> 
+    set_number_format(-1, 2:3, "%d") |> 
+    set_number_format(-1, 4, "%.1f") |> 
+    set_number_format(-1, 5, "%.3f") |> 
+    set_col_width(6:7, 0.25)
+}
+
+regr_tests_table(regr_list, indiv_effects_test) |> 
+  format_tests_table()
+```
+
+Contrastes de autocorrelación
+
+```{r}
+#| warning: false
+
+ar_test <- function(model) {
+  pwartest(model, type = "HC2") |> 
+    tidy()
+}
+
+regr_tests_table(regr_list, ar_test) |> 
+  format_tests_table()
+```
+
+Contrastes (robustos) de homogeneidad de los efectos temporales:
+
+```{r}
+time_effects_test <- function(model) {
+  xnames <- c("y2022", "y2023")
+  result <- lht(model, xnames, test = "F", vcov. = fe_vcov) 
+  tibble(df1 = result$Df[2],
+         df2 = result$Res.Df[2],
+         statistic = result$F[2],
+         p.value = result$`Pr(>F)`[2],
+         method = "Non-significant time effects", 
+         alternative = "some significant effect")
+  
+}
+
+regr_tests_table(regr_list, time_effects_test) |> 
+  format_tests_table()
+```
+
+Contrastes (robustos) de significación conjunta de los regresores (exceptuando efectos individuales y temporales):
+
+```{r}
+joint_signif_test <- function(model) {
+  xnames <- setdiff(names(coef(model)), c("y2022", "y2023"))
+  result <- lht(model, xnames, test = "F", vcov. = fe_vcov) 
+  tibble(df1 = result$Df[2],
+         df2 = result$Res.Df[2],
+         statistic = result$F[2],
+         p.value = result$`Pr(>F)`[2],
+         method = "Joint significance F test", 
+         alternative = "some significant effect")
+}
+
+regr_tests_table(regr_list, joint_signif_test) |> 
+  format_tests_table()
+```
+
 ::: callout-warning
 A partir de aquí es código antiguo que solo se conserva para confirmar resultados. Eventualmente desaparecerá.
 :::
