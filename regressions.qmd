@@ -48,7 +48,12 @@ library(rlang)
 Tablas:
 
 ```{r}
+#| warning: false
+
+library(tinytable)
+library(huxtable)
 library(modelsummary)
+library(broom)
 ```
 
 # Datos
