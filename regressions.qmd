@@ -34,6 +34,14 @@ format:
     library(plm)
     ```
 
+-   `lmtest`: matriz de covarianzas robusta.
+
+    ```{r}
+    #| warning: false
+
+    library(lmtest)
+    ```
+
 -   `car`: contrastes de Wald.
 
     ```{r}
@@ -263,11 +271,11 @@ regr_list <-
 Tabla con los resultados de la estimación por efectos fijos. Los errores típicos son robustos a heteroscedasticidad y autocorrelación arbitraria dentro de cada unidad de corte transversal.
 
 ```{r}
-modelsummary(regr_list,
-             stars = c("*" = .1, "**" = .05, "***" = .01),
-             estimate = "{estimate}{stars}",
-             gof_omit = "AIC|BIC|Adj.|Num.|Errors|RMSE",
-             vcov = fe_vcov)
+regr_list |> 
+  map(\(x) coeftest(x$fit, vcov. = x$vcov, save = TRUE)) |> 
+  huxreg(stars = c(`***` = 0.01, `**` = 0.05, `*` = 0.10),
+         statistics = c(R2 = "r.squared")) |> 
+  set_width(0.80) 
 ```
 
 ::: callout-warning
@@ -275,15 +283,15 @@ modelsummary(regr_list,
 
 -   ~~¿Que R2 se usa? El R2 ajustado no tiene mucho sentido, ¿no?~~
 
--   Estadísticos F para cada regresión.
+-   ~~Estadísticos F para cada regresión.~~
 
 -   Falta el número de periodos temporales y el número de unidades usadas.
 
--   ¿Signos negativos?
+-   ~~¿Signos negativos?~~
 
 -   ¿Columna para los asteriscos?
 
--   Nota con la leyenda de los asteriscos.
+-   ~~Nota con la leyenda de los asteriscos.~~
 
 -   En general, notas.
 :::
