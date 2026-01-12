@@ -309,15 +309,17 @@ Contrastes homogeneidad efectos individuales. Estos contrastes comparan el ajust
 ```{r}
 #| warning: false
 
-indiv_effects_test <- function(x) {
-  pFtest(as.formula(x), 
-         data = reg_db, effect = "individual") |>
+indiv_effects_test <- function(fit, vcov) {
+  frml <- formula(fit)
+  smpl <- model.frame(fit)
+  pool <- plm(frml, smpl, model = "pooling")
+  pFtest(fit, pool) |>
     tidy()
 }
 
 regr_tests_table <- function(rlist, test_func) {
   rlist |> 
-    map(test_func) |> 
+    map(\(x) test_func(x$fit, x$vcov)) |> 
     list_rbind() |> 
     mutate(model = names(rlist)) |> 
     relocate(model) 
@@ -339,7 +341,7 @@ format_tests_table <- function(tbl) {
 }
 
 regr_tests_table(regr_list, indiv_effects_test) |> 
-  format_tests_table()
+ format_tests_table()
 ```
 
 Contrastes de autocorrelación
@@ -347,21 +349,22 @@ Contrastes de autocorrelación
 ```{r}
 #| warning: false
 
-ar_test <- function(model) {
-  pwartest(model, type = "HC2") |> 
+ar_test <- function(fit, vcov) {
+  pwartest(fit, type = "HC2") |> 
     tidy()
 }
 
-regr_tests_table(regr_list, ar_test) |> 
+regr_list |> 
+  regr_tests_table(ar_test) |> 
   format_tests_table()
 ```
 
 Contrastes (robustos) de homogeneidad de los efectos temporales:
 
 ```{r}
-time_effects_test <- function(model) {
+time_effects_test <- function(fit, vcov) {
   xnames <- c("y2022", "y2023")
-  result <- lht(model, xnames, test = "F", vcov. = fe_vcov) 
+  result <- lht(fit, xnames, test = "F", vcov. = vcov) 
   tibble(df1 = result$Df[2],
          df2 = result$Res.Df[2],
          statistic = result$F[2],
@@ -371,16 +374,17 @@ time_effects_test <- function(model) {
   
 }
 
-regr_tests_table(regr_list, time_effects_test) |> 
+regr_list |> 
+  regr_tests_table(time_effects_test) |> 
   format_tests_table()
 ```
 
 Contrastes (robustos) de significación conjunta de los regresores (exceptuando efectos individuales y temporales):
 
 ```{r}
-joint_signif_test <- function(model) {
-  xnames <- setdiff(names(coef(model)), c("y2022", "y2023"))
-  result <- lht(model, xnames, test = "F", vcov. = fe_vcov) 
+joint_signif_test <- function(fit, vcov) {
+  xnames <- setdiff(names(coef(fit)), c("y2022", "y2023"))
+  result <- lht(fit, xnames, test = "F", vcov. = vcov) 
   tibble(df1 = result$Df[2],
          df2 = result$Res.Df[2],
          statistic = result$F[2],
