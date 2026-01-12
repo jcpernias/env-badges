@@ -56,7 +56,10 @@ format:
     #| warning: false
 
     library(tinytable)
+
     library(huxtable)
+    options(huxtable.long_minus = TRUE)
+
     library(modelsummary)
     library(broom)
     ```
