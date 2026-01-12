@@ -353,37 +353,3 @@ joint_signif_test <- function(model) {
 regr_tests_table(regr_list, joint_signif_test) |> 
   format_tests_table()
 ```
-
-::: callout-warning
-A partir de aquí es código antiguo que solo se conserva para confirmar resultados. Eventualmente desaparecerá.
-:::
-
-```{r}
-plm(update(frml, pct_0 ~ .),     
-    data = reg_db, index = c("mun_code", "year")) |>
-  summary(vcov = vcovHC)
-```
-
-```{r}
-plm(update(frml, pct_eco ~ .),     
-    data = reg_db, index = c("mun_code", "year")) |>
-  summary(vcov = vcovHC)
-```
-
-```{r}
-plm(update(frml, pct_c ~ .),     
-    data = reg_db, index = c("mun_code", "year")) |>
-  summary(vcov = vcovHC)
-```
-
-```{r}
-plm(update(frml, pct_b ~ .),     
-    data = reg_db, index = c("mun_code", "year")) |>
-  summary(vcov = vcovHC)
-```
-
-```{r}
-plm(update(frml, pct_none ~ .),     
-    data = reg_db, index = c("mun_code", "year")) |>
-  summary(vcov = vcovHC)
-```
