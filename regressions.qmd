@@ -29,6 +29,14 @@ Regresión con datos de panel:
 library(plm)
 ```
 
+Contraste de hipótesis:
+
+```{r}
+#| warning: false
+
+library(car)
+```
+
 Manipulación de fórmulas:
 
 ```{r}
