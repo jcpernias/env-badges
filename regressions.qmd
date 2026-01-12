@@ -6,6 +6,11 @@ editor_options:
 
 params:
   low_pop_thresh: 2500
+  
+format:
+  html:
+    code-fold: true
+    code-summary: "*Código fuente*"
 ---
 
 # Preliminares
