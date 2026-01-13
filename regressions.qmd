@@ -322,7 +322,7 @@ Contrastes homogeneidad efectos individuales. Estos contrastes comparan el ajust
 
 indiv_effects_test <- function(fit, vcov) {
   frml <- formula(fit)
-  smpl <- model.frame(fit)
+  smpl <- reg_db
   pool <- plm(frml, smpl, model = "pooling")
   pFtest(fit, pool) |>
     tidy()
