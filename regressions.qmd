@@ -151,10 +151,12 @@ db <- ine_data |>
          pct_prim = ed_prim / pop * 100,
          pct_sec_low = ed_sec_low / ed_all * 100,
          pct_sec_high = ed_sec_high / ed_all * 100,
+         pct_comp = pct_sec_low + pct_prim,
          pct_sup = ed_sup / ed_all * 100,
          y2022 = if_else(year == 2022, 1, 0),
          y2023 = if_else(year == 2023, 1, 0),
-         linc = log(ninc_hh))
+         linc = log(ninc_hh),
+         pct_pop_imm = 100 - pct_pop_native)
 ```
 
 Variables creadas:
@@ -265,12 +267,12 @@ Variables explicativas que se usan en cada una de las regresiones.
 
 ```{r}
 frml <-  ~ y2022 + y2023 + 
-  pct_women +  
-  pct_prim + pct_sec_low + pct_sec_high + 
+  pct_women + 
+  pct_comp + pct_sec_high +  
   linc +
   pct_pop_lt_18 + pct_pop_gt_65 +
   hh_size + hh1_pct +
-  pct_pop_native
+  pct_pop_imm
 ```
 
 Crea una lista de fórmulas añadiendo las diferentes variables dependientes a la fórmula que especifica las variables explicativas y estima por efectos fijos cada una de las regresiones.
@@ -380,7 +382,6 @@ time_effects_test <- function(fit, vcov) {
          p.value = result$`Pr(>F)`[2],
          method = "Non-significant time effects", 
          alternative = "some significant effect")
-  
 }
 
 regr_list |> 
