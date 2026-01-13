@@ -246,6 +246,18 @@ Correlación entre los cambios en las diferentes categorías de vehículos.
     }
     ```
 
+-   `regr_table`: genera una tabla con los resultados de una lista de regresiones.
+
+    ```{r}
+    regr_table <- function(rlist) {
+      rlist |> 
+        map(\(x) coeftest(x$fit, vcov. = x$vcov, save = TRUE)) |> 
+        huxreg(stars = c(`***` = 0.01, `**` = 0.05, `*` = 0.10),
+               statistics = c(R2 = "r.squared")) |> 
+        set_width(0.80) 
+    }
+    ```
+
 ## Regresiones de la proporción de distintivos
 
 Variables explicativas que se usan en cada una de las regresiones.
@@ -271,11 +283,7 @@ regr_list <-
 Tabla con los resultados de la estimación por efectos fijos. Los errores típicos son robustos a heteroscedasticidad y autocorrelación arbitraria dentro de cada unidad de corte transversal.
 
 ```{r}
-regr_list |> 
-  map(\(x) coeftest(x$fit, vcov. = x$vcov, save = TRUE)) |> 
-  huxreg(stars = c(`***` = 0.01, `**` = 0.05, `*` = 0.10),
-         statistics = c(R2 = "r.squared")) |> 
-  set_width(0.80) 
+regr_list |> regr_table()
 ```
 
 ::: callout-warning
