@@ -142,6 +142,11 @@ db <- ine_data |>
          pc_c = badge_c / pop,
          pc_b = badge_b / pop,
          pc_none = badge_none / pop,
+         lpc_0    = log(pc_0),
+         lpc_eco  = log(pc_eco),
+         lpc_c    = log(pc_c),
+         lpc_b    = log(pc_b),
+         lpc_none = log(pc_none),
          pct_pop_lt_18 = pop_lt_18 / pop * 100,
          pct_pop_gt_65 = pop_gt_65 / pop * 100,
          pct_pop_native = pop_native / pop * 100,
@@ -182,6 +187,36 @@ Variables creadas:
 ::: callout-warning
 Definir otras variables usadas en las regresiones.
 :::
+
+```{r}
+find_outliers <- function(x) {
+  limits <- db |> 
+    pull({{ x }}) |> 
+    quantile(prob = c(0.0025, 0.9975)) |> 
+    unname()
+  db |> 
+    filter({{ x }} <= limits[1] | {{ x }} >= limits[2]) |> 
+    pull(mun_code) |> 
+    unique()
+}
+
+no_0 <- db |> 
+  filter(badge_0 == 0) |> 
+  pull(mun_code) |> 
+  unique()
+
+exclude_mun <- 
+  c(no_0,
+    find_outliers(pc_0),
+    find_outliers(pc_eco),
+    find_outliers(pc_c),
+    find_outliers(pc_b),
+    find_outliers(pc_none)) |> 
+  unique()
+
+db <- db |> 
+  filter(!mun_code %in% exclude_mun)
+```
 
 Establece las variables índice que identifican, por un lado, cada uno de los municipios y, por otro lado, los años.
 
@@ -271,7 +306,7 @@ frml <-  ~ y2022 + y2023 +
   pct_comp + pct_sec_high +  
   linc +
   pct_pop_lt_18 + pct_pop_gt_65 +
-  hh_size + hh1_pct +
+  log(hh_size) + hh1_pct +
   pct_pop_imm
 ```
 
@@ -405,4 +440,49 @@ joint_signif_test <- function(fit, vcov) {
 
 regr_tests_table(regr_list, joint_signif_test) |> 
   format_tests_table()
+```
+
+## Otras regresiones
+
+```{r}
+reg_db |> 
+  select(starts_with("pc_")) |> 
+  summary()
+```
+
+```{r}
+regr_list <- 
+  update_lhs(frml, lpc_0, lpc_eco, lpc_c, lpc_b, lpc_none) |> 
+  map(\(frml) fe_est(frml, data = reg_db, vcov = fe_vcov))
+regr_list |> regr_table()
+```
+
+```{r}
+db2 <- db |> 
+  mutate(year = factor(year))
+
+ggplot(aes(x = year, y = lpc_0), 
+       data = db2) + 
+  geom_boxplot(fill = "white") + 
+  coord_flip()
+
+ggplot(aes(x = year, y = lpc_eco), 
+       data = db2) + 
+  geom_boxplot(fill = "white") + 
+  coord_flip()
+
+ggplot(aes(x = year, y = lpc_c), 
+       data = db2) + 
+  geom_boxplot(fill = "white") + 
+  coord_flip()
+
+ggplot(aes(x = year, y = lpc_b), 
+       data = db2) + 
+  geom_boxplot(fill = "white") + 
+  coord_flip()
+
+ggplot(aes(x = year, y = lpc_none), 
+       data = db2) + 
+  geom_boxplot(fill = "white") + 
+  coord_flip()
 ```
