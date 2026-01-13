@@ -131,11 +131,12 @@ db <- ine_data |>
   left_join(dgt_data, 
             by = join_by(mun_code == ine_code, year)) |> 
   filter(!mun_code %in% union(mun_missing_dgt, mun_low_pop)) |>
-  mutate(pct_0 = badge_0 / fleet * 100,
-         pct_eco = badge_eco / fleet * 100,
-         pct_c = badge_c / fleet * 100,
-         pct_b = badge_b / fleet * 100,
-         pct_none = badge_none / fleet * 100,
+  mutate(fleet2 = badge_0 + badge_eco + badge_c + badge_b + badge_none,
+         pct_0 = badge_0 / fleet2 * 100,
+         pct_eco = badge_eco / fleet2 * 100,
+         pct_c = badge_c / fleet2 * 100,
+         pct_b = badge_b / fleet2 * 100,
+         pct_none = badge_none / fleet2 * 100,
          pc_0 = badge_0 / pop,
          pc_eco = badge_eco / pop,
          pc_c = badge_c / pop,
