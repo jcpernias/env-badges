@@ -7,3 +7,4 @@ data/*.rds
 **/*.quarto_ipynb
 *.html
 _freeze
+.positai
