@@ -72,10 +72,10 @@ tt(dgt_files)
 
 El archivo `"dgt_mun_dict.csv"` contiene información acerca de las variables contenidas en los ficheros de la DGT:
 
--   `column`: Número de columna de la hoja de cálculo.
--   `label`: Nombre de la columna en la hoja de cálculo.
--   `name`: Nombre de la variable.
--   `type`: Tipo de variable (`c` para texto, `i` para enteros y `d` para reales).
+- `column`: Número de columna de la hoja de cálculo.
+- `label`: Nombre de la columna en la hoja de cálculo.
+- `name`: Nombre de la variable.
+- `type`: Tipo de variable (`c` para texto, `i` para enteros y `d` para reales).
 
 Se ignoran las columnas con valores ausentes en `name`.
 
