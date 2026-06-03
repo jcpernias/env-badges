@@ -1,0 +1,123 @@
+---
+title: "Datos ecovidrio"
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+## Preliminares
+
+### Librerías
+
+Manipulación de datos:
+
+```{r}
+#| messages: false
+#| warning: false
+
+library(dplyr)
+library(tidyr)
+```
+
+Manipulación de cadenas:
+
+```{r}
+library(stringr)
+library(glue)
+```
+
+Programación funcional (`map` y similares):
+
+```{r}
+library(purrr)
+```
+
+Lectura de hojas de cálculo:
+
+```{r}
+library(readr)
+```
+
+Tablas:
+
+```{r}
+library(tinytable)
+library(modelsummary)
+```
+
+{{< include _global.qmd >}}
+
+## Lectura de los datos
+
+### Rutas
+
+Los datos de ecovidrio se encuentran en su propia carpeta:
+
+```{r}
+ev_raw_data_dir <- file.path(raw_data_dir, "ecovidrio")
+```
+
+### Códigos INE
+
+Lee los códigos de comunidades autónomas, provincias y municipios del INE:
+
+```{r}
+ine_prov <- read_csv(data_file("ine_prov_codes.csv"), 
+                     col_types = "c")
+ine_mun_codes <- read_csv(data_file("ine_mun_codes.csv"), 
+                          col_types = "c")
+```
+
+### Datos de ecovidrio
+
+Lee información geográfica de los datos de ecovidrio. En el caso de Cataluña, los datos se desglosan en comarcas: se añade el código de la Comunidad Autónoma. En el caso de Navarra la información está duplicada en la práctica totalidad de municipios.
+
+```{r}
+ev_prov <- read_csv(data_file("ev_prov.csv"),
+                    col_types = "c", comment = "#") |>
+  rename(file_num = num) |>
+  left_join(ine_prov, join_by(zona == prov_name)) |>
+  mutate(reg_code = replace_when(reg_code, is.na(reg_code) ~ "09")) |>
+  filter_out(reg_code == "15", file_num != "093")
+```
+
+Construye un conjunto de datos con los nombres de los ficheros de ecovidrio. Se excluyen los ficheros con duplicados de municipios navarros.
+
+```{r}
+in_files <- 
+  expand_grid(year = years,
+              code = formatC(c(1:93,109:112), 
+                             width = 3, flag = "0")) |>
+  mutate(file = file.path(ev_raw_data_dir, 
+                          paste0(year, "_", code, ".csv")))
+```
+
+Lee los ficheros csv de ecovidrio. Elimina las entradas de 2023 de Cerdedo y Cotobade, y corrige los nombres de los municipios.
+
+```{r}
+read_ev_file <- function(year, code, file) {
+  read_csv(file = file, col_types = "dcdd") |>
+    mutate(file_num = code)
+}
+
+fix_mun_names <- read_csv(data_file("fix_mun_names.csv"), 
+                          col_types = "c")
+
+ev_data <- pmap(in_files, read_ev_file) |>
+  bind_rows() |>
+  filter_out(mun %in% c("Cerdedo", "Cotobade")) |> 
+  left_join(select(ev_prov, file_num, reg_code, prov_code),
+            join_by(file_num)) |>
+  mutate(mun = replace_values(mun, from = fix_mun_names$mun,
+                              to = fix_mun_names$fix_mun)) |>
+  select(-prov_code) |>
+  left_join(ine_mun_codes, join_by(mun == mun_name, reg_code)) |>
+  mutate(mun_code = paste0(prov_code, mun_order)) |>
+  select(-c(file_num, mun_order))
+```
+
+Guarda los datos:
+
+```{r}
+save_data(ev_data, "ecovidrio_data.rds")
+```

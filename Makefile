@@ -2,7 +2,7 @@ SHELL := /bin/sh
 
 RSCRIPT := Rscript --no-save --no-restore
 
-src_files := data_dgt data_ine \
+src_files := data_dgt data_ine data_ecovidrio \
 	regressions
 
 dgt_data_files := $(addprefix data/orig/DatosMunicipalesGeneral_, \
@@ -18,7 +18,7 @@ ine_code_files := $(addprefix data/ine_, \
 	$(addsuffix _codes.csv, mun prov reg))
 
 data_files := $(addprefix data/, \
-	$(addsuffix .rds, ine_data dgt_mun_data))
+	$(addsuffix .rds, ine_data dgt_mun_data ecovidrio_data))
 
 out_dir := _output
 
