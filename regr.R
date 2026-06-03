@@ -90,3 +90,39 @@ update_lhs <- function(frml, ...) {
 fe_vcov <- function(mod) {
   plm::vcovHC(mod, method = "arellano", type = "HC2")
 }
+
+fe_est <- function(frml, data, vcov = NULL) {
+  x <- plm(frml, data = data)
+  vx <- NULL
+  if (!is.null(vcov)) {
+    vx <- vcov(x)
+  }
+  list(fit = x, vcov = vx)
+}
+
+regr_table <- function(rlist) {
+  rlist |>
+    map(\(x) coeftest(x$fit, vcov. = x$vcov, save = TRUE)) |>
+    huxreg(stars = c(`***` = 0.01, `**` = 0.05, `*` = 0.10),
+           statistics = c(R2 = "r.squared")) |>
+    set_width(0.80)
+}
+
+frml <-  ~ y2022 + y2023 +
+  pct_women +
+  pct_comp + pct_sec_high +
+  linc +
+  pct_pop_lt_18 + pct_pop_gt_65 +
+  log(hh_size) + hh1_pct +
+  pct_pop_imm + lkg_pc
+
+reg_db <-  db |>
+  pdata.frame(index = c("mun_code", "year"), row.names = FALSE)
+
+
+regr_list <-
+  update_lhs(frml, pct_0, pct_eco, pct_c, pct_b, pct_none) |>
+  map(\(frml) fe_est(frml, data = reg_db, vcov = fe_vcov))
+
+
+regr_list |> regr_table()
