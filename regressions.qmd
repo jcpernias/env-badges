@@ -122,6 +122,13 @@ Falta incorporar los datos del CIS.
 ¿Datos del atlas de áreas urbanas? ¿Densidad de población?
 :::
 
+## Ecovidrio
+
+```{r}
+ev_data <- readRDS("data/ecovidrio_data.rds") |> 
+  select(year, kg, mun_code)
+```
+
 ## Combinación de las bases de datos
 
 Combina las base de datos del INE y de la DGT. Elimina los municipios que no superan los `r params$low_pop_thresh` habitantes (`r length(mun_low_pop)` municipios) y aquellos para los que no está disponible en algún año los datos del parque de vehículos (`r length(mun_missing_dgt)` municipios). Se descartan `r length(union(mun_missing_dgt, mun_low_pop))` municipios en total. Finalmente, se crean algunas variables que se usarán en las regresiones.
@@ -130,6 +137,8 @@ Combina las base de datos del INE y de la DGT. Elimina los municipios que no sup
 db <- ine_data |> 
   left_join(dgt_data, 
             by = join_by(mun_code == ine_code, year)) |> 
+  left_join(select(ev_data, year, kg, mun_code),
+            by = join_by(mun_code, year)) |> 
   filter(!mun_code %in% union(mun_missing_dgt, mun_low_pop)) |>
   mutate(fleet2 = badge_0 + badge_eco + badge_c + badge_b + badge_none,
          pct_0 = badge_0 / fleet2 * 100,
@@ -161,7 +170,8 @@ db <- ine_data |>
          y2022 = if_else(year == 2022, 1, 0),
          y2023 = if_else(year == 2023, 1, 0),
          linc = log(ninc_hh),
-         pct_pop_imm = 100 - pct_pop_native)
+         pct_pop_imm = 100 - pct_pop_native, 
+         lkg_pc = log(kg/pop))
 ```
 
 Variables creadas:
@@ -307,7 +317,7 @@ frml <-  ~ y2022 + y2023 +
   linc +
   pct_pop_lt_18 + pct_pop_gt_65 +
   log(hh_size) + hh1_pct +
-  pct_pop_imm
+  pct_pop_imm + lkg_pc
 ```
 
 Crea una lista de fórmulas añadiendo las diferentes variables dependientes a la fórmula que especifica las variables explicativas y estima por efectos fijos cada una de las regresiones.
