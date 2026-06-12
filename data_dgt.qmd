@@ -117,7 +117,8 @@ read_dgt_file <- function(input_file, year, dict) {
   read_xlsx(input_file, skip = 1,
             col_types = dict$excel_col_types,
             col_names = dict$name) |>
-    filter(!str_detect(mun, fixed("sin especificar"))) |> #<2>
+    filter_out(str_detect(mun, 
+                          "[Mm]unicipio [Ss]in [Ee]specificar")) |> #<2>
     mutate(year = year) |> #<3>
     select(-mun) |> 
     relocate(year, .after = ine_code) |> 
@@ -169,3 +170,15 @@ db |>
 ```
 
 Además de las variables numéricas, el fichero `dgt_mun_data.rds` contiene la variable de texto `ine_code`, código del municipio como lo define el INE.
+
+```{r}
+#| echo: false
+
+frml <- (badge_none + badge_b + badge_c + 
+           badge_eco + badge_0 + badge_all) * (Year = year) ~
+  N + (Mean + SD + Median)
+
+db |> 
+  datasummary(frml, data = _) |> 
+  tt_style(j = 2:4, align = "r")
+```
