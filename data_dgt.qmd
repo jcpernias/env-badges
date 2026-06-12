@@ -138,9 +138,12 @@ db <-
        \(file, year) 
          read_dgt_file(raw_data_file(file), year, dgt_dict)) |>
   bind_rows() |> 
-  mutate(year = factor(year), 
-         badge_all = rowSums(across(badge_b:badge_none)))
+  mutate(year = factor(year), #<1>
+         badge_all = rowSums(across(badge_none:badge_0))) #<2>
 ```
+
+1.  Convierte `year` en un factor.
+2.  Calcula el total de vehículos con distintivo (no coincide con `fleet`).
 
 ### Escritura del conjunto de datos
 
