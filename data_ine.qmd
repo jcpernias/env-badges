@@ -158,7 +158,7 @@ pop_data |>
   tt_style(j = 2:7, align = "r")
 ```
 
-## Edad
+### Edad
 
 Población de los municipios por sexo y edad (año a año) para el periodo 2021-2024.
 
