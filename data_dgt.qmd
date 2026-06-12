@@ -136,7 +136,9 @@ db <-
   pmap(dgt_files,
        \(file, year) 
          read_dgt_file(raw_data_file(file), year, dgt_dict)) |>
-  bind_rows()
+  bind_rows() |> 
+  mutate(year = factor(year), 
+         badge_all = rowSums(across(badge_b:badge_none)))
 ```
 
 ### Escritura del conjunto de datos
