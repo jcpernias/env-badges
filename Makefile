@@ -6,7 +6,7 @@ src_files := data_dgt data_ine data_ecovidrio \
 	regressions
 
 dgt_data_files := $(addprefix data/orig/DatosMunicipalesGeneral_, \
-	$(addsuffix .xlsx, 2021 2022 2023))
+	$(addsuffix .xlsx, 2021 2022 2023 2024 2025))
 
 ine_atlas_files := $(addprefix data/orig/, \
 	$(addsuffix .csv.xz, 30824 30832 37677))
