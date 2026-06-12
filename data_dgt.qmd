@@ -120,7 +120,8 @@ read_dgt_file <- function(input_file, year, dict) {
     filter(!str_detect(mun, fixed("sin especificar"))) |> #<2>
     mutate(year = year) |> #<3>
     select(-mun) |> 
-    relocate(year, .after = ine_code)
+    relocate(year, .after = ine_code) |> 
+    relocate(badge_none, .before = badge_b)
 }
 ```
 
