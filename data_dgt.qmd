@@ -51,6 +51,10 @@ library(modelsummary)
 
 Desde 2021 la [DGT](https://www.dgt.es) proporciona ficheros Excel con información municipal, incluyendo el número de vehículos por distintivo ambiental. Se puede acceder a esta información a través del portal [DGT en cifras](https://www.dgt.es/menusecundario/dgt-en-cifras/).
 
+```{r}
+years <- 2021:2025
+```
+
 ### Ficheros de Excel
 
 Tabla con los nombres de los ficheros:
