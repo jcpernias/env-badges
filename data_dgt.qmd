@@ -130,7 +130,7 @@ read_dgt_file <- function(input_file, year, dict) {
 2.  Se ignoran las filas que recogen cifras no asociadas a un municipio en concreto.
 3.  Se añade la variable `year` para identificar a qué año corresponden los datos.
 
-Lee los datos de cada año y los combina en un único conjunto de datos:
+Se leen los datos de cada año y se combinan en un único conjunto de datos:
 
 ```{r}
 
