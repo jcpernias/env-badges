@@ -269,30 +269,33 @@ mun_codes <- read_csv(data_file("ine_mun_codes.csv"),
   relocate(mun_code)
 ```
 
-En el Atlas siguen apareciendo municipios que ya no existen, o que han cambiado de provincia.
-
-| Código | Municipio    | Causa                                                  |
-|-------------------|-------------------|-----------------------------------|
-| 04039  | Darrical     | Desaparece en 1997 incorporándose a Alcolea            |
-| 12066  | Gatova       | Pasa a la provincia de Valencia en 1995                |
-| 15026  | Cesuras      | Fusión en 2013 con Oza dos Ríos creándose Oza-Cesuras  |
-| 15063  | Oza dos Ríos | Fusión en 2013 con Cesuras creándose Oza-Cesuras       |
-| 17122  | Palmerola    | Desaparece en 1991 incorporándose a Les Lloses         |
-| 36011  | Cerdedo      | Fusión en 2016 con Cotobade creándose Cerdedo-Cotobade |
-| 36012  | Cotobade     | Fusión en 2016 con Cerdedo creándose Cerdedo-Cotobade  |
-
-Tampoco se incluye los datos de Usansolo (código INE 48916). Segregado de Galdakoa (código INE 48036) oficialmente en diciembre de 2023. En el Atlas aparece segregado en el año 2023, pero no en el Censo anual de población.
+En el Atlas siguen apareciendo municipios que ya no existen, que han cambiado de provincia o que se han segregado de otros. 
 
 ```{r}
-drop_mun_codes <- c("04039", "12066", "15026", "15063", 
-                    "17122", "36011", "36012", "48916")
+#| echo: false
+
+drop_mun <- 
+  tribble(
+    ~Código, ~Municipio,     ~Causa,
+    "04039", "Darrical",     "Desaparece en 1997 incorporándose a Alcolea",
+    "12066", "Gatova",       "Pasa a la provincia de Valencia en 1995",
+    "15026", "Cesuras",      "Fusión en 2013 con Oza dos Ríos creándose Oza-Cesuras",
+    "15063", "Oza dos Ríos", "Fusión en 2013 con Cesuras creándose Oza-Cesuras",
+    "17122", "Palmerola",    "Desaparece en 1991 incorporándose a Les Lloses",
+    "36011", "Cerdedo",      "Fusión en 2016 con Cotobade creándose Cerdedo-Cotobade",
+    "36012", "Cotobade",     "Fusión en 2016 con Cerdedo creándose Cerdedo-Cotobade",
+    "48036", "Galdako",      "Usansolo se segrega en el año 2023",
+    "48916", "Usansolo",     "Segregado de Galdakoa oficialmente en diciembre de 2023",
+  ) 
+
+drop_mun |> tt()
 ```
 
 Consolidación de los conjuntos de datos del INE. En el resultado final se excluyen también los municipios con menos de 500 habitantes, para los cuales no hay información sobre el nivel de estudios completado.
 
 ```{r}
 ine_data <- mun_codes |> 
-  filter(!mun_code %in% drop_mun_codes) |>
+  filter_out(mun_code %in% pull(drop_mun, Código)) |>
   left_join(filter(pop_data), by = join_by(mun_code)) |> 
   left_join(age_data, by = join_by(mun_code, year)) |> 
   right_join(educ_data, by = join_by(mun_code, year)) |> 
