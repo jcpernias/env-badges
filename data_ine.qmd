@@ -92,9 +92,9 @@ read_atlas_file <- function(csv_file) {
 
 Datos del Atlas de distribución de renta de los hogares. Serie 2015--2023. Se usan 3 archivos proporcionados por el INE:
 
--   `30824.csv`: Renta.
--   `30832.csv`: Demografía.
--   `37677.csv`: Distribución de la renta.
+- `30824.csv`: Renta.
+- `30832.csv`: Demografía.
+- `37677.csv`: Distribución de la renta.
 
 ```{r}
 base_names <- c("30824", "30832", "37677")
