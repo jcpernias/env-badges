@@ -269,7 +269,7 @@ mun_codes <- read_csv(data_file("ine_mun_codes.csv"),
   relocate(mun_code)
 ```
 
-En el Atlas siguen apareciendo municipios que ya no existen, que han cambiado de provincia o que se han segregado de otros. 
+En el Atlas siguen apareciendo municipios que ya no existen, que han cambiado de provincia o que se han segregado de otros.
 
 ```{r}
 #| echo: false
